@@ -1,14 +1,18 @@
 package simples
 
-import "qiniupkg.com/x/log.v7"
+import "log"
 
 type A struct {
-	Name string
-	D    *D `sm:"auto"`
+	Name     string
+	D        *D `sm:"auto"`
+	Password string `sm:"$.d.Password"`
 }
 
+func (a *A)Init()  {
+	log.Println("hi init")
+}
 func (a *A)Print() {
-	log.Println(a.Name, "[d]", a.D)
+	log.Println(a.Name,a.Password, "[d]", a.D)
 }
 
 type C struct {
@@ -21,11 +25,11 @@ func (c *C)Print() {
 }
 
 type D struct {
-	Name string
-	C    *C `sm:"auto"`
+	Name     string
+	Password string `sm:"#.postgres.user"`
+	C        *C `sm:"auto"`
 }
 
-func (d *D)Print()  {
+func (d *D)Print() {
 	log.Println(d.Name, "[c]", d.C)
-
 }

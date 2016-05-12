@@ -5,21 +5,18 @@ import "reflect"
 type Stone interface{}
 
 type Plugin interface {
-	Look(path string) interface{}
+	Look(path string) reflect.Value
 	Prefix() string
 	ZIndex() int
 }
 
-type PathFactory interface {
-	Name()
-	Stone(path string, value reflect.Value) Stone
-}
 
 type Basket interface {
 	Add(name string, stone Stone)
 	Put(stone Stone)
 	Stone(name string, t reflect.Type) (stone Stone)
-	PathFactoryRegister(PathFactory)
+	NameStone(name string) (stone Stone)
+	PluginRegister(Plugin)
 	Start()
 	ShutDown()
 }

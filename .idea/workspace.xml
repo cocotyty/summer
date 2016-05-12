@@ -2,9 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="6b3edad2-3b2c-421a-82e4-02de0c05a2b5" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/features/basket.go" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/features/basket_test.go" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/simples/a.go" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/features/refplugin.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/libraries/GOPATH__summer_.xml" afterPath="$PROJECT_DIR$/.idea/libraries/GOPATH__summer_.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/features/basket.go" afterPath="$PROJECT_DIR$/features/basket.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/features/basket_test.go" afterPath="$PROJECT_DIR$/features/basket_test.go" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/simples/a.go" afterPath="$PROJECT_DIR$/simples/a.go" />
     </list>
     <ignored path="summer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,10 +37,32 @@
         <entry file="file://$PROJECT_DIR$/features/context.go">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="9" column="8" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+              <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
               <folding>
                 <element signature="e#18#34#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="a.go" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/simples/a.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.5423729">
+              <caret line="11" column="18" selection-start-line="11" selection-start-column="18" selection-end-line="11" selection-end-column="18" />
+              <folding>
+                <element signature="e#17#29#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="log.go" pinned="false" current-in-tab="false">
+        <entry file="file:///usr/local/go/src/log/log.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="294" column="11" selection-start-line="294" selection-start-column="11" selection-end-line="294" selection-end-column="12" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -46,22 +71,33 @@
         <entry file="file://$PROJECT_DIR$/features/basket_test.go">
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
-              <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+              <caret line="14" column="7" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
               <folding>
-                <element signature="e#18#88#0" expanded="true" />
+                <element signature="e#18#120#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="basket.go" pinned="false" current-in-tab="true">
+      <file leaf-file-name="refplugin.go" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/features/refplugin.go">
+          <provider selected="true" editor-type-id="text-editor">
+            <state vertical-scroll-proportion="0.0">
+              <caret line="9" column="17" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
+              <folding>
+                <element signature="e#18#59#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="basket.go" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/features/basket.go">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.7718941">
-              <caret line="194" column="4" selection-start-line="194" selection-start-column="4" selection-end-line="194" selection-end-column="4" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="173" column="50" selection-start-line="173" selection-start-column="50" selection-end-line="173" selection-end-column="50" />
               <folding>
-                <element signature="e#18#85#0" expanded="true" />
-                <element signature="n#!!block;n#Add#0" expanded="false" />
+                <element signature="e#18#81#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -72,26 +108,6 @@
           <provider selected="true" editor-type-id="text-editor">
             <state vertical-scroll-proportion="0.0">
               <caret line="0" column="16" selection-start-line="0" selection-start-column="16" selection-end-line="0" selection-end-column="16" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="value.go" pinned="false" current-in-tab="false">
-        <entry file="file:///usr/local/go/src/reflect/value.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="739" column="32" selection-start-line="739" selection-start-column="32" selection-end-line="739" selection-end-column="32" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="type.go" pinned="false" current-in-tab="false">
-        <entry file="file:///usr/local/go/src/reflect/type.go">
-          <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="735" column="5" selection-start-line="735" selection-start-column="5" selection-end-line="735" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -123,10 +139,15 @@
         <option value="$PROJECT_DIR$/simple/waiter.go" />
         <option value="$PROJECT_DIR$/simple/consumer.go" />
         <option value="$PROJECT_DIR$/features/borad.go" />
-        <option value="$PROJECT_DIR$/simples/a.go" />
-        <option value="$PROJECT_DIR$/features/basket_test.go" />
+        <option value="$PROJECT_DIR$/play/a.json" />
+        <option value="$PROJECT_DIR$/play/main.go" />
+        <option value="$PROJECT_DIR$/features/refplugin.go" />
+        <option value="$PROJECT_DIR$/features/TomlPlugin.go" />
         <option value="$PROJECT_DIR$/features/context.go" />
         <option value="$PROJECT_DIR$/features/basket.go" />
+        <option value="$PROJECT_DIR$/features/tomlplugin.go" />
+        <option value="$PROJECT_DIR$/features/basket_test.go" />
+        <option value="$PROJECT_DIR$/simples/a.go" />
       </list>
     </option>
   </component>
@@ -193,6 +214,20 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
+              <option name="myItemId" value="simples" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="summer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="summer" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
               <option name="myItemId" value="features" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
@@ -211,7 +246,12 @@
     <property name="DefaultGoTemplateProperty" value="Go File" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
   </component>
-  <component name="RunManager" selected="Go Test.basket_test.go">
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/play" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Go Test.TestBasket in basket_test.go">
     <configuration default="false" name="TestBasket in basket_test.go" type="GoTestRunConfiguration" factoryName="Go Test" temporary="true">
       <module name="summer" />
       <working_directory value="$PROJECT_DIR$" />
@@ -227,6 +267,19 @@
       <framework value="gotest" />
       <kind value="FILE" />
       <filePath value="$PROJECT_DIR$/features/basket_test.go" />
+      <method />
+    </configuration>
+    <configuration default="false" name="Build main.go and run" type="GoApplicationRunConfiguration" factoryName="Go Application" temporary="true">
+      <module name="summer" />
+      <working_directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/play/main.go" />
+      <kind value="FILE" />
+      <method />
+    </configuration>
+    <configuration default="false" name="go run main.go" type="GoRunFileConfiguration" factoryName="Go Single File" temporary="true">
+      <module name="summer" />
+      <working_directory value="$PROJECT_DIR$" />
+      <filePath value="$PROJECT_DIR$/play/main.go" />
       <method />
     </configuration>
     <configuration default="true" type="#org.jetbrains.idea.devkit.run.PluginConfigurationType" factoryName="Plugin">
@@ -716,14 +769,18 @@
       <envs />
       <method />
     </configuration>
-    <list size="2">
+    <list size="4">
       <item index="0" class="java.lang.String" itemvalue="Go Test.TestBasket in basket_test.go" />
       <item index="1" class="java.lang.String" itemvalue="Go Test.basket_test.go" />
+      <item index="2" class="java.lang.String" itemvalue="Go Application.Build main.go and run" />
+      <item index="3" class="java.lang.String" itemvalue="Go Single File.go run main.go" />
     </list>
     <recent_temporary>
-      <list size="2">
-        <item index="0" class="java.lang.String" itemvalue="Go Test.basket_test.go" />
-        <item index="1" class="java.lang.String" itemvalue="Go Test.TestBasket in basket_test.go" />
+      <list size="4">
+        <item index="0" class="java.lang.String" itemvalue="Go Test.TestBasket in basket_test.go" />
+        <item index="1" class="java.lang.String" itemvalue="Go Application.Build main.go and run" />
+        <item index="2" class="java.lang.String" itemvalue="Go Single File.go run main.go" />
+        <item index="3" class="java.lang.String" itemvalue="Go Test.basket_test.go" />
       </list>
     </recent_temporary>
   </component>
@@ -733,6 +790,9 @@
     </option>
   </component>
   <component name="ShelveChangesManager" show_recycled="false" />
+  <component name="SvnConfiguration">
+    <configuration />
+  </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
       <changelist id="6b3edad2-3b2c-421a-82e4-02de0c05a2b5" name="Default" comment="" />
@@ -740,44 +800,44 @@
       <option name="number" value="Default" />
       <updated>1462865090513</updated>
       <workItem from="1462865097077" duration="14043000" />
-      <workItem from="1462961001761" duration="2235000" />
+      <workItem from="1462961001761" duration="11800000" />
     </task>
     <servers />
   </component>
   <component name="TestHistory">
-    <history-entry file="TestBasket_in_basket_test_go - 2016.05.10 at 17h 52m 19s.xml">
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 39m 19s.xml">
       <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestBasket_in_basket_test_go - 2016.05.10 at 17h 52m 55s.xml">
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 39m 36s.xml">
       <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestBasket_in_basket_test_go - 2016.05.10 at 17h 53m 17s.xml">
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 41m 34s.xml">
       <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="TestBasket_in_basket_test_go - 2016.05.10 at 17h 56m 26s.xml">
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 48m 31s.xml">
       <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="basket_test_go - 2016.05.10 at 18h 21m 29s.xml">
-      <configuration name="basket_test.go" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 48m 57s.xml">
+      <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="basket_test_go - 2016.05.10 at 18h 23m 15s.xml">
-      <configuration name="basket_test.go" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 49m 57s.xml">
+      <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="basket_test_go - 2016.05.10 at 18h 24m 10s.xml">
-      <configuration name="basket_test.go" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 50m 41s.xml">
+      <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="basket_test_go - 2016.05.10 at 18h 24m 29s.xml">
-      <configuration name="basket_test.go" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 50m 49s.xml">
+      <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="basket_test_go - 2016.05.10 at 18h 25m 52s.xml">
-      <configuration name="basket_test.go" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 55m 48s.xml">
+      <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
-    <history-entry file="basket_test_go - 2016.05.10 at 18h 27m 10s.xml">
-      <configuration name="basket_test.go" configurationId="GoTestRunConfiguration" />
+    <history-entry file="TestBasket_in_basket_test_go - 2016.05.12 at 18h 56m 45s.xml">
+      <configuration name="TestBasket in basket_test.go" configurationId="GoTestRunConfiguration" />
     </history-entry>
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="16278000" />
+    <option name="totallyTimeSpent" value="25843000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1920" height="1080" extended-state="0" />
@@ -789,7 +849,8 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Maven Projects" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970297" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32970297" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.44554454" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24973376" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -797,15 +858,22 @@
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="UI Designer" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32970297" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
       <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
     </layout>
+  </component>
+  <component name="Vcs.Log.UiProperties">
+    <option name="RECENTLY_FILTERED_USER_GROUPS">
+      <collection />
+    </option>
+    <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+      <collection />
+    </option>
   </component>
   <component name="VcsContentAnnotationSettings">
     <option name="myLimit" value="2678400000" />
@@ -832,7 +900,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
           <folding>
-            <element signature="e#18#88#0" expanded="true" />
+            <element signature="e#18#120#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -842,8 +910,7 @@
         <state vertical-scroll-proportion="0.0">
           <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding>
-            <element signature="e#18#85#0" expanded="true" />
-            <element signature="n#!!block;n#Add#0" expanded="false" />
+            <element signature="e#18#81#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -868,6 +935,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
           <caret line="439" column="5" selection-start-line="439" selection-start-column="5" selection-end-line="439" selection-end-column="5" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -879,13 +947,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/simples/a.go">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="11" selection-start-line="9" selection-start-column="11" selection-end-line="9" selection-end-column="11" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file:///usr/local/go/src/runtime/panic.go">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -893,28 +954,112 @@
         </state>
       </provider>
     </entry>
-    <entry file="file:///usr/local/go/src/reflect/type.go">
+    <entry file="file:///usr/local/go/src/io/ioutil/ioutil.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.39285713">
+          <caret line="49" column="31" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/os/file_unix.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.39285713">
+          <caret line="85" column="5" selection-start-line="85" selection-start-column="5" selection-end-line="85" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/os/file.go">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="735" column="5" selection-start-line="735" selection-start-column="5" selection-end-line="735" selection-end-column="5" />
+          <caret line="242" column="5" selection-start-line="242" selection-start-column="5" selection-end-line="242" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/compress/gzip/gzip.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.56954885">
+          <caret line="47" column="5" selection-start-line="47" selection-start-column="5" selection-end-line="47" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/io/io.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="-0.62969923">
+          <caret line="365" column="5" selection-start-line="365" selection-start-column="5" selection-end-line="365" selection-end-column="5" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file:///usr/local/go/src/reflect/value.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="739" column="32" selection-start-line="739" selection-start-column="32" selection-end-line="739" selection-end-column="32" />
+        <state vertical-scroll-proportion="0.3329939">
+          <caret line="237" column="25" selection-start-line="237" selection-start-column="25" selection-end-line="237" selection-end-column="25" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/os/types.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="36" column="7" selection-start-line="36" selection-start-column="7" selection-end-line="36" selection-end-column="7" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file:///usr/local/go/src/reflect/type.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="90" column="27" selection-start-line="90" selection-start-column="27" selection-end-line="90" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/../../pelletier/go-toml/toml.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="272" column="5" selection-start-line="272" selection-start-column="5" selection-end-line="272" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/tomlplugin.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="4" column="34" selection-start-line="4" selection-start-column="34" selection-end-line="4" selection-end-column="34" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/refplugin.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="9" column="17" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
+          <folding>
+            <element signature="e#18#59#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/features/basket_test.go">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="16" column="0" selection-start-line="16" selection-start-column="0" selection-end-line="16" selection-end-column="0" />
+          <caret line="14" column="7" selection-start-line="14" selection-start-column="7" selection-end-line="14" selection-end-column="7" />
           <folding>
-            <element signature="e#18#88#0" expanded="true" />
+            <element signature="e#18#120#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/features/basket.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="173" column="50" selection-start-line="173" selection-start-column="50" selection-end-line="173" selection-end-column="50" />
+          <folding>
+            <element signature="e#18#81#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -927,23 +1072,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file:///usr/local/go/src/log/log.go">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.0">
+          <caret line="294" column="11" selection-start-line="294" selection-start-column="11" selection-end-line="294" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/features/context.go">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
-          <caret line="9" column="8" selection-start-line="9" selection-start-column="8" selection-end-line="9" selection-end-column="8" />
+          <caret line="12" column="0" selection-start-line="12" selection-start-column="0" selection-end-line="12" selection-end-column="0" />
           <folding>
             <element signature="e#18#34#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/features/basket.go">
+    <entry file="file://$PROJECT_DIR$/simples/a.go">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.7718941">
-          <caret line="194" column="4" selection-start-line="194" selection-start-column="4" selection-end-line="194" selection-end-column="4" />
+        <state vertical-scroll-proportion="0.5423729">
+          <caret line="11" column="18" selection-start-line="11" selection-start-column="18" selection-end-line="11" selection-end-column="18" />
           <folding>
-            <element signature="e#18#85#0" expanded="true" />
-            <element signature="n#!!block;n#Add#0" expanded="false" />
+            <element signature="e#17#29#0" expanded="true" />
           </folding>
         </state>
       </provider>

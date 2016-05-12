@@ -41,6 +41,7 @@
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/mobile/bind/testdata" />
       <root url="file://$PROJECT_DIR$/../../edsrzf/mmap-go/.git" />
       <root url="file://$PROJECT_DIR$/../../../errors-show/.git" />
+      <root url="file://$PROJECT_DIR$/../../davecgh/go-spew/.git" />
       <root url="file://$PROJECT_DIR$/../../cheggaaa/pb/.git" />
       <root url="file://$PROJECT_DIR$/../../../notes/.idea" />
       <root url="file://$PROJECT_DIR$/../../dchest/uniuri/.git" />
@@ -57,6 +58,7 @@
       <root url="file://$PROJECT_DIR$/../../bmizerany/assert/.git" />
       <root url="file://$PROJECT_DIR$/../../getlantern/golog/.git" />
       <root url="file://$PROJECT_DIR$/../../../gopkg.in/redis.v3/testdata" />
+      <root url="file://$PROJECT_DIR$/../../davecgh/go-spew/spew/testdata" />
       <root url="file://$PROJECT_DIR$/../../../git.coding.net/cocotyty/openapi/.git" />
       <root url="file://$PROJECT_DIR$/../../Unknwon/bra/.git" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/mobile/testdata" />
@@ -76,10 +78,12 @@
       <root url="file://$PROJECT_DIR$/../../valyala/fasttemplate/.git" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/tools/go/callgraph/rta/testdata" />
       <root url="file://$PROJECT_DIR$/../../../h5/.idea" />
+      <root url="file://$PROJECT_DIR$/../../pelletier/go-toml/.git" />
       <root url="file://$PROJECT_DIR$/../../samuel/go-zookeeper/.git" />
       <root url="file://$PROJECT_DIR$/../../cratonica/trayhost/.git" />
       <root url="file://$PROJECT_DIR$/../../../git.coding.net/cocotyty/mouge-tcp-server/.idea" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/tools/go/loader/testdata" />
+      <root url="file://$PROJECT_DIR$/../../pelletier/go-buffruneio/.git" />
       <root url="file://$PROJECT_DIR$/../../labstack/echo/_fixture" />
       <root url="file://$PROJECT_DIR$/../../go-macaron/inject/.git" />
       <root url="file://$PROJECT_DIR$/../../../google.golang.org/grpc/transport/testdata" />

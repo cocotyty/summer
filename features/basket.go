@@ -3,10 +3,13 @@ package features
 import (
 	"reflect"
 	"strings"
-	"qiniupkg.com/x/log.v7"
+	"log"
 	"errors"
+	"sort"
+	"os"
 )
 
+var logger = log.New(os.Stdout, "[summer]", log.LstdFlags)
 var NotSupportStructErr = errors.New("sorry we not support struct now")
 var CannotResolveDependencyErr = errors.New("sorry,stone's dependency missed")
 
@@ -29,20 +32,20 @@ func buildTagOptions(tag string) *tagOption {
 	to := &tagOption{}
 	if tag == "*" {
 		to.auto = true
-		return
+		return to
 	}
 	if len(tag) <= 1 {
 		log.Println("bad tag")
-		return
+		return to
 	}
-	if tag[1] == '$' {
+	if strings.Contains(tag, ".") {
 		to.depend = false
-		to.path = tag[1:]
-		return
+		to.path = tag
+		return to
 	}
 	to.depend = true
 	to.name = tag
-	return
+	return to
 }
 func newHolder(stone   Stone, basket *basket) *holder {
 	return &holder{stone, reflect.TypeOf(stone).Elem(), reflect.TypeOf(stone), reflect.ValueOf(stone).Elem(), false, basket}
@@ -82,7 +85,7 @@ func (this *holder)buildFiled(filedValue reflect.Value, filedInfo reflect.Struct
 		}
 		filedValue.Set(reflect.ValueOf(hd.stone))
 	}else {
-		this.basket.laterFills = append(this.basket.laterFills, laterFill{filedValue, filedInfo, to})
+		this.basket.laterFills = append(this.basket.laterFills, &laterFill{filedValue, filedInfo, to})
 	}
 }
 
@@ -91,12 +94,28 @@ type laterFill struct {
 	filedInfo  reflect.StructField
 	tagOption  *tagOption
 }
+type  pluginList []Plugin
+
+func (list pluginList)Len() int {
+	return len(list)
+}
+func (list pluginList)Less(i, j int) bool {
+	return list[i].ZIndex() < list[j].ZIndex()
+}
+func (list pluginList)Swap(i, j int) {
+	list[i], list[j] = list[j], list[i]
+}
+
 type basket struct {
 	kv         map[string][]*holder
 	laterFills []*laterFill
 	//board map[string]*holder
+	plugins    pluginList
 }
 
+func NewBasket() Basket {
+	return &basket{make(map[string][]*holder), []*laterFill{}, pluginList{}}
+}
 func (this *basket)Add(name string, stone Stone) {
 	t := reflect.TypeOf(stone)
 	if t.Kind() != reflect.Ptr {
@@ -109,7 +128,9 @@ func (this *basket)Add(name string, stone Stone) {
 		this.kv[name] = []*holder{newHolder(stone, this)}
 	}
 }
-
+func (this *basket)PluginRegister(plugin Plugin) {
+	this.plugins = append(this.plugins, plugin)
+}
 func (this *basket)Put(stone Stone) {
 	t := reflect.TypeOf(stone)
 	var name string
@@ -131,9 +152,41 @@ func (this *basket)build() {
 			h.build()
 		}
 	}
-	for _,lf:=range this.laterFills{
-
+	this.pluginWorks();
+}
+func (this *basket)pluginWorks() {
+	logger.Println("[plugin][start-tag-map]")
+	m := map[string][]*laterFill{}
+	for _, lf := range this.laterFills {
+		logger.Println("[plugin][tag-path]",lf.filedInfo.Name, lf.tagOption.path)
+		prefix := lf.tagOption.path[:strings.Index(lf.tagOption.path, ".")]
+		logger.Println("[plugin][tag-prefix]", prefix)
+		lf.tagOption.path = lf.tagOption.path[strings.Index(lf.tagOption.path, ".") + 1:]
+		if list, has := m[prefix]; has {
+			list = append(list, lf)
+		}else {
+			m[prefix] = []*laterFill{lf}
+		}
 	}
+	sort.Sort(this.plugins)
+	for _, p := range this.plugins {
+		laters := m[p.Prefix()]
+		logger.Println("[plugin][load]",p.Prefix())
+		for _, l := range laters {
+			v := p.Look(l.tagOption.path)
+			if l.filedInfo.Type.Kind() != v.Kind() {
+				if l.filedInfo.Type.Kind() == reflect.Ptr && v.Kind() != reflect.Ptr {
+					l.filedValue.Set(v.Addr())
+				}
+				if l.filedInfo.Type.Kind() != reflect.Ptr && v.Kind() == reflect.Ptr {
+					l.filedValue.Set(v.Elem())
+				}
+			}else {
+				l.filedValue.Set(v)
+			}
+		}
+	}
+	logger.Println("[plugin][finish]")
 }
 func (this *basket)Stone(name string, t reflect.Type) (stone Stone) {
 	if holder, found := this.kv[name]; found {
@@ -149,6 +202,12 @@ func (this *basket)Stone(name string, t reflect.Type) (stone Stone) {
 				return stone
 			}
 		}
+	}
+	return nil
+}
+func (this *basket)NameStone(name string) (stone Stone) {
+	if holders, found := this.kv[name]; found {
+		return holders[0].stone
 	}
 	return nil
 }
@@ -187,11 +246,20 @@ func (this *basket)find(t reflect.Type, h *holder) (Stone, bool) {
 
 func (this *basket)Start() {
 	this.build()
+	for _, holders := range this.kv {
+		for _, holder := range holders {
+			if initer, ok := holder.stone.(Init); ok {
+				initer.Init()
+			}
+		}
+	}
 }
 func (this *basket)ShutDown() {
-
-}
-type FillPlugin struct {
-
-
+	for _, holders := range this.kv {
+		for _, holder := range holders {
+			if initer, ok := holder.stone.(Destroy); ok {
+				initer.Destroy()
+			}
+		}
+	}
 }
