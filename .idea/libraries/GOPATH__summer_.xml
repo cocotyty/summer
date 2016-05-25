@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="file://$PROJECT_DIR$/../../../notes" />
       <root url="file://$PROJECT_DIR$/../../../simpledsl" />
+      <root url="file://$PROJECT_DIR$/../../../testmem" />
       <root url="file://$PROJECT_DIR$/../../../h5" />
       <root url="file://$PROJECT_DIR$/../../../sourcegraph.com" />
       <root url="file://$PROJECT_DIR$/../../../fastproxy" />
@@ -104,6 +105,7 @@
       <root url="file://$PROJECT_DIR$/../../gogap/stack/.git" />
       <root url="file://$PROJECT_DIR$/../../jinzhu/inflection/.git" />
       <root url="file://$PROJECT_DIR$/../../nsf/gocode/_gccgo" />
+      <root url="file://$PROJECT_DIR$/../../bradfitz/gomemcache/.idea" />
       <root url="file://$PROJECT_DIR$/../../smartystreets/goconvey/.git" />
       <root url="file://$PROJECT_DIR$/../../nsf/gocode/_goremote" />
       <root url="file://$PROJECT_DIR$/../../../qiniupkg.com/x/.git" />
@@ -128,6 +130,7 @@
       <root url="file://$PROJECT_DIR$/../../shurcooL/trayhost/.git" />
       <root url="file://$PROJECT_DIR$/../../../gopkg.in/redis.v3/.git" />
       <root url="file://$PROJECT_DIR$/../../../google.golang.org/grpc/interop/client/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../testmem/.idea" />
       <root url="file://$PROJECT_DIR$/../../siddontang/rdb/.git" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/tools/go/ssa/interp/testdata" />
       <root url="file://$PROJECT_DIR$/../../upyun/go-sdk/.git" />
@@ -140,6 +143,7 @@
       <root url="file://$PROJECT_DIR$/.idea" />
       <root url="file://$PROJECT_DIR$/../../coreos/go-etcd/.git" />
       <root url="file://$PROJECT_DIR$/../../siddontang/ledisdb/.git" />
+      <root url="file://$PROJECT_DIR$/../socks-line/.idea" />
       <root url="file://$PROJECT_DIR$/../../garyburd/redigo/.git" />
       <root url="file://$PROJECT_DIR$/.git" />
       <root url="file://$PROJECT_DIR$/../../visualfc/goqt/.git" />
@@ -153,6 +157,7 @@
       <root url="file://$PROJECT_DIR$/../../klauspost/compress/.git" />
       <root url="file://$PROJECT_DIR$/../../klauspost/compress/testdata" />
       <root url="file://$PROJECT_DIR$/../../../google.golang.org/grpc/examples/route_guide/testdata" />
+      <root url="file://$PROJECT_DIR$/../rpc/.idea" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/exp/.git" />
       <root url="file://$PROJECT_DIR$/../../klauspost/compress/gzip/testdata" />
       <root url="file://$PROJECT_DIR$/../../../lesson-pusher/.idea" />
@@ -168,7 +173,6 @@
       <root url="file://$PROJECT_DIR$/../../mholt/archiver/.git" />
       <root url="file://$PROJECT_DIR$/../../../h5/.git" />
       <root url="file://$PROJECT_DIR$/../../miketheprogrammer/go-thrust/.git" />
-      <root url="file://$PROJECT_DIR$/../socks-line/.idea" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/tools/oracle/testdata" />
       <root url="file://$PROJECT_DIR$/../../bradfitz/gomemcache/.git" />
       <root url="file://$PROJECT_DIR$/../../../git.coding.net/cocotyty/mouge-tcp-client/.git" />
@@ -182,6 +186,7 @@
       <root url="file://$PROJECT_DIR$/../../golang/freetype/testdata" />
       <root url="file://$PROJECT_DIR$/../../rogpeppe/godef/go/printer/testdata" />
       <root url="file://$PROJECT_DIR$/../../armon/go-socks5/.idea" />
+      <root url="file://$PROJECT_DIR$/../../hprose/hprose-go/.git" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/http2/testdata" />
       <root url="file://$PROJECT_DIR$/../../klauspost/compress/snappy/testdata" />
       <root url="file://$PROJECT_DIR$/../../flosch/pongo2/.git" />
@@ -200,6 +205,7 @@
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/image/.git" />
       <root url="file://$PROJECT_DIR$/../../getlantern/systray/.git" />
       <root url="file://$PROJECT_DIR$/../../lunny/nodb/.git" />
+      <root url="file://$PROJECT_DIR$/../../hprose/hprose-go/.idea" />
       <root url="file://$PROJECT_DIR$/../../codegangsta/cli/.git" />
       <root url="file://$PROJECT_DIR$/../../smartystreets/assertions/internal/oglemock/generate/testdata" />
       <root url="file://$PROJECT_DIR$/../../smartystreets/assertions/internal/oglemock/createmock/testdata" />
@@ -222,6 +228,7 @@
       <root url="file://$PROJECT_DIR$/../../hoisie/redis/.git" />
       <root url="file://$PROJECT_DIR$/../../onsi/gomega/gexec/_fixture" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/net/html/charset/testdata" />
+      <root url="file://$PROJECT_DIR$/../../../gopkg.in/vmihailenco/msgpack.v2/.git" />
       <root url="file://$PROJECT_DIR$/../../gogap/logrus/.git" />
       <root url="file://$PROJECT_DIR$/../../klauspost/compress/flate/testdata" />
       <root url="file://$PROJECT_DIR$/../../../golang.org/x/tools/cmd/bundle/testdata" />
