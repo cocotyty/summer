@@ -1,4 +1,4 @@
-package features
+package summer
 
 import "reflect"
 import (
@@ -9,13 +9,13 @@ type TomlPlugin struct {
 	tree *toml.TomlTree
 }
 
-func (this *TomlPlugin)Look(path string) reflect.Value {
+func (this *TomlPlugin) Look(path string) reflect.Value {
 	logger.Println(path)
 	return reflect.ValueOf(this.tree.Get(path))
 }
-func (this *TomlPlugin)Prefix() string {
+func (this *TomlPlugin) Prefix() string {
 	return "#"
 }
-func (this *TomlPlugin)ZIndex() int {
+func (this *TomlPlugin) ZIndex() int {
 	return 0
 }

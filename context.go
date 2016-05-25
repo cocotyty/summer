@@ -1,4 +1,4 @@
-package features
+package summer
 
 import "reflect"
 
@@ -9,7 +9,6 @@ type Plugin interface {
 	Prefix() string
 	ZIndex() int
 }
-
 
 type Basket interface {
 	Add(name string, stone Stone)
