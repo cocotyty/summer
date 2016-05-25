@@ -1,15 +1,15 @@
-package features
+package summer
 
 import (
-	"testing"
 	"github.com/cocotyty/summer/simples"
-	"reflect"
 	"github.com/pelletier/go-toml"
+	"reflect"
+	"testing"
 )
 
 func TestBasket(t *testing.T) {
 	b := NewBasket()
-	tom,_:=toml.Load(`[postgres]
+	tom, _ := toml.Load(`[postgres]
 user = "pelletier"
 password = "mypassword"`)
 	b.PluginRegister(&TomlPlugin{tom})

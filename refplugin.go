@@ -1,16 +1,16 @@
-package features
+package summer
 
 import (
-"reflect"
-"strings"
+	"reflect"
 	"strconv"
+	"strings"
 )
 
 type RefPlugin struct {
 	basket Basket
 }
 
-func (this *RefPlugin)Look(path string) reflect.Value {
+func (this *RefPlugin) Look(path string) reflect.Value {
 	stack := strings.Split(path, ".")
 
 	root := this.basket.NameStone(stack[0])
@@ -23,7 +23,7 @@ func (this *RefPlugin)Look(path string) reflect.Value {
 	}
 	return value
 }
-func (this *RefPlugin)lookChildren(parent reflect.Value, childrenName string) reflect.Value {
+func (this *RefPlugin) lookChildren(parent reflect.Value, childrenName string) reflect.Value {
 	pKind := parent.Kind()
 	if pKind == reflect.Ptr {
 		return this.lookChildren(parent.Elem(), childrenName)
@@ -44,10 +44,10 @@ func (this *RefPlugin)lookChildren(parent reflect.Value, childrenName string) re
 	panic("sorry i dont know what happend")
 }
 
-func (this *RefPlugin)Prefix() string {
+func (this *RefPlugin) Prefix() string {
 	return "$"
 }
 
-func (this *RefPlugin)ZIndex() int {
+func (this *RefPlugin) ZIndex() int {
 	return 1
 }
