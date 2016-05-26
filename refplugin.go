@@ -4,7 +4,12 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
+	"github.com/gogap/logrus"
 )
+
+func init() {
+	defaultBasket.PluginRegister(&RefPlugin{defaultBasket}, AfterInit)
+}
 
 type RefPlugin struct {
 	basket Basket
@@ -12,7 +17,7 @@ type RefPlugin struct {
 
 func (this *RefPlugin) Look(path string) reflect.Value {
 	stack := strings.Split(path, ".")
-
+	logrus.Debug("[ref]", path)
 	root := this.basket.NameStone(stack[0])
 	value := reflect.ValueOf(root)
 	for index, name := range stack {
@@ -47,7 +52,6 @@ func (this *RefPlugin) lookChildren(parent reflect.Value, childrenName string) r
 func (this *RefPlugin) Prefix() string {
 	return "$"
 }
-
 func (this *RefPlugin) ZIndex() int {
 	return 1
 }

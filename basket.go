@@ -2,14 +2,58 @@ package summer
 
 import (
 	"errors"
-	"log"
-	"os"
+//log "github.com/gogap/logrus"
 	"reflect"
 	"sort"
 	"strings"
+	"qiniupkg.com/x/log.v7"
+	"github.com/pelletier/go-toml"
+	"fmt"
 )
 
-var logger = log.New(os.Stdout, "[summer]", log.LstdFlags)
+func TomlFile(path string) error {
+	tree, err := toml.LoadFile(path)
+	if err != nil {
+		return err
+	}
+	defaultBasket.PluginRegister(&TomlPlugin{tree}, BeforeInit)
+	return nil
+}
+
+func Toml(src string) error {
+	tree, err := toml.Load(src)
+	if err != nil {
+		return err
+	}
+	defaultBasket.PluginRegister(&TomlPlugin{tree}, BeforeInit)
+	return nil
+}
+
+var defaultBasket = NewBasket()
+
+func Add(name string, stone Stone) {
+	defaultBasket.Add(name, stone)
+}
+func Put(stone Stone) {
+	defaultBasket.Put(stone)
+}
+func GetStone(name string, t reflect.Type) (stone Stone) {
+	return defaultBasket.Stone(name, t)
+
+}
+func NameStone(name string) (stone Stone) {
+	return defaultBasket.NameStone(name)
+}
+func PluginRegister(p Plugin, pt PluginWorkTime) {
+	defaultBasket.PluginRegister(p, pt)
+}
+func Start() {
+	defaultBasket.Start()
+}
+func ShutDown() {
+	defaultBasket.ShutDown()
+}
+
 var NotSupportStructErr = errors.New("sorry we not support struct now")
 var CannotResolveDependencyErr = errors.New("sorry,stone's dependency missed")
 
@@ -26,6 +70,7 @@ type tagOption struct {
 	depend bool
 	name   string
 	path   string
+	prefix string
 }
 
 func buildTagOptions(tag string) *tagOption {
@@ -35,12 +80,13 @@ func buildTagOptions(tag string) *tagOption {
 		return to
 	}
 	if len(tag) <= 1 {
-		log.Println("bad tag")
+		log.Error("bad tag :", tag)
 		return to
 	}
 	if strings.Contains(tag, ".") {
 		to.depend = false
-		to.path = tag
+		to.prefix = tag[:strings.Index(tag, ".")]
+		to.path = tag[strings.Index(tag, ".") + 1:]
 		return to
 	}
 	to.depend = true
@@ -60,8 +106,8 @@ func (this *holder) build() {
 
 func (this *holder) buildFiled(filedValue reflect.Value, filedInfo reflect.StructField) {
 	tag := filedInfo.Tag.Get("sm")
-	log.Println(filedInfo, filedInfo.Tag, tag)
-
+	fmt.Println("[build filed]", filedInfo.Name, ",", filedInfo.Tag)
+	log.Debug("[build filed]", filedInfo, filedInfo.Tag, tag)
 	if tag == "" {
 		return
 	}
@@ -110,11 +156,11 @@ type basket struct {
 	kv         map[string][]*holder
 	laterFills []*laterFill
 	//board map[string]*holder
-	plugins pluginList
+	plugins    map[PluginWorkTime]pluginList
 }
 
 func NewBasket() Basket {
-	return &basket{make(map[string][]*holder), []*laterFill{}, pluginList{}}
+	return &basket{make(map[string][]*holder), []*laterFill{}, make(map[PluginWorkTime]pluginList)}
 }
 func (this *basket) Add(name string, stone Stone) {
 	t := reflect.TypeOf(stone)
@@ -128,8 +174,14 @@ func (this *basket) Add(name string, stone Stone) {
 		this.kv[name] = []*holder{newHolder(stone, this)}
 	}
 }
-func (this *basket) PluginRegister(plugin Plugin) {
-	this.plugins = append(this.plugins, plugin)
+func (this *basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
+	fmt.Println("[plugin register][", plugin.Prefix(), "]", t)
+	list, ok := this.plugins[t]
+	if !ok {
+		list = pluginList{}
+	}
+	list = append(list, plugin)
+	this.plugins[t] = list
 }
 func (this *basket) Put(stone Stone) {
 	t := reflect.TypeOf(stone)
@@ -152,41 +204,69 @@ func (this *basket) build() {
 			h.build()
 		}
 	}
-	this.pluginWorks()
+
 }
-func (this *basket) pluginWorks() {
-	logger.Println("[plugin][start-tag-map]")
+func (this *basket) pluginWorks(worktime PluginWorkTime) {
+	log.Debug("[plugin][start-tag-map]")
 	m := map[string][]*laterFill{}
 	for _, lf := range this.laterFills {
-		logger.Println("[plugin][tag-path]", lf.filedInfo.Name, lf.tagOption.path)
-		prefix := lf.tagOption.path[:strings.Index(lf.tagOption.path, ".")]
-		logger.Println("[plugin][tag-prefix]", prefix)
-		lf.tagOption.path = lf.tagOption.path[strings.Index(lf.tagOption.path, ".")+1:]
-		if list, has := m[prefix]; has {
+		if list, has := m[lf.tagOption.prefix]; has {
 			list = append(list, lf)
 		} else {
-			m[prefix] = []*laterFill{lf}
+			m[lf.tagOption.prefix] = []*laterFill{lf}
 		}
 	}
-	sort.Sort(this.plugins)
-	for _, p := range this.plugins {
+	sort.Sort(this.plugins[worktime])
+	log.Info("[plugins]", this.plugins[worktime]);
+	list := this.plugins[worktime]
+	for _, p := range list {
+		log.Debug("[plugin][load][", worktime, "]:", p.Prefix())
 		laters := m[p.Prefix()]
-		logger.Println("[plugin][load]", p.Prefix())
 		for _, l := range laters {
 			v := p.Look(l.tagOption.path)
+			log.Debug("[plugin][path]", l.tagOption.path, v.Interface())
+			if !l.filedValue.CanSet() {
+				log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, ",may be an unexported value ")
+				continue
+			}
 			if l.filedInfo.Type.Kind() != v.Kind() {
 				if l.filedInfo.Type.Kind() == reflect.Ptr && v.Kind() != reflect.Ptr {
 					l.filedValue.Set(v.Addr())
-				}
-				if l.filedInfo.Type.Kind() != reflect.Ptr && v.Kind() == reflect.Ptr {
+				}else if l.filedInfo.Type.Kind() != reflect.Ptr && v.Kind() == reflect.Ptr {
 					l.filedValue.Set(v.Elem())
+				}else if ( l.filedInfo.Type.Kind() == reflect.Int || l.filedInfo.Type.Kind() == reflect.Int8 || l.filedInfo.Type.Kind() == reflect.Int16 || l.filedInfo.Type.Kind() == reflect.Int32 || l.filedInfo.Type.Kind() == reflect.Int64) {
+					switch value := v.Interface().(type) {
+					case int8:
+						l.filedValue.SetInt(int64(value))
+					case int16:
+						l.filedValue.SetInt(int64(value))
+					case int32:
+						l.filedValue.SetInt(int64(value))
+					case int64:
+						l.filedValue.SetInt(int64(value))
+					case int:
+						l.filedValue.SetInt(int64(value))
+					default:
+						log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, " because ", l.filedInfo.Type, "!=", v.Kind())
+					}
+				}else if ( v.Kind() == reflect.Float64 || v.Kind() == reflect.Float32 ) {
+					switch value := v.Interface().(type) {
+					case float32:
+						l.filedValue.SetFloat(float64(value))
+					case float64:
+						l.filedValue.SetFloat(float64(value))
+					default:
+						log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, " because ", l.filedInfo.Type, "!=", v.Kind())
+					}
+				}else {
+					log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, " because ", l.filedInfo.Type, "!=", v.Kind())
 				}
 			} else {
 				l.filedValue.Set(v)
 			}
 		}
 	}
-	logger.Println("[plugin][finish]")
+	log.Debug("[plugin][finish]")
 }
 func (this *basket) Stone(name string, t reflect.Type) (stone Stone) {
 	if holder, found := this.kv[name]; found {
@@ -246,10 +326,25 @@ func (this *basket) find(t reflect.Type, h *holder) (Stone, bool) {
 
 func (this *basket) Start() {
 	this.build()
+	this.pluginWorks(BeforeInit)
 	for _, holders := range this.kv {
 		for _, holder := range holders {
 			if initer, ok := holder.stone.(Init); ok {
+				log.Debug("[init]", holder.class.Name(), holder.stone)
 				initer.Init()
+			}else {
+				log.Debug("[without init]", holder.class.Name(), holder.stone)
+			}
+		}
+	}
+	this.pluginWorks(AfterInit)
+	for _, holders := range this.kv {
+		for _, holder := range holders {
+			if initer, ok := holder.stone.(Ready); ok {
+				log.Debug("[ready]", holder.class.Name(), holder.stone)
+				initer.Ready()
+			}else {
+				log.Debug("[without ready]", holder.class.Name(), holder.stone)
 			}
 		}
 	}

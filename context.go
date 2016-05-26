@@ -9,18 +9,27 @@ type Plugin interface {
 	Prefix() string
 	ZIndex() int
 }
+type PluginWorkTime int
+
+const (
+	BeforeInit PluginWorkTime = iota
+	AfterInit
+)
 
 type Basket interface {
 	Add(name string, stone Stone)
 	Put(stone Stone)
 	Stone(name string, t reflect.Type) (stone Stone)
 	NameStone(name string) (stone Stone)
-	PluginRegister(Plugin)
+	PluginRegister(Plugin,PluginWorkTime)
 	Start()
 	ShutDown()
 }
 type Init interface {
 	Init()
+}
+type Ready interface {
+	Ready()
 }
 type Destroy interface {
 	Destroy()
