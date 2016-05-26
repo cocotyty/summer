@@ -4,7 +4,7 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-	"github.com/gogap/logrus"
+"qiniupkg.com/x/log.v7"
 )
 
 func init() {
@@ -17,7 +17,7 @@ type RefPlugin struct {
 
 func (this *RefPlugin) Look(Holder *Holder, path string) reflect.Value {
 	stack := strings.Split(path, ".")
-	logrus.Debug("[ref]", path)
+	log.Println("[ref]", path,Holder.class)
 	holder := this.basket.NameHolder(stack[0])
 	Holder.depends = append(holder.depends, holder)
 	root := holder.stone

@@ -107,11 +107,10 @@ func (this *Holder) build() {
 
 func (this *Holder) buildFiled(filedValue reflect.Value, filedInfo reflect.StructField) {
 	tag := filedInfo.Tag.Get("sm")
-	fmt.Println("[build filed]", filedInfo.Name, ",", filedInfo.Tag)
-	log.Debug("[build filed]", filedInfo, filedInfo.Tag, tag)
 	if tag == "" {
 		return
 	}
+	log.Println("[build Filed]", this.class, filedInfo.Name, filedInfo.Type, filedInfo.Tag, tag)
 	to := buildTagOptions(tag)
 	var name string
 	if to.auto {
@@ -137,7 +136,9 @@ func (this *Holder) buildFiled(filedValue reflect.Value, filedInfo reflect.Struc
 		}
 		this.depends = append(this.depends, hd)
 		filedValue.Set(reflect.ValueOf(hd.stone))
+		log.Println(this.class, " depend ", hd.class)
 	} else {
+		log.Println(this.class, filedInfo.Name, "later do ", to)
 		this.basket.laterFills = append(this.basket.laterFills, &laterFill{filedValue, filedInfo, to, this})
 	}
 }
@@ -221,24 +222,26 @@ func (this *basket) build() {
 
 }
 func (this *basket) pluginWorks(worktime PluginWorkTime) {
-	log.Debug("[plugin][start-tag-map]")
+	log.Println("[plugin][start-tag-map]")
+
 	m := map[string][]*laterFill{}
 	for _, lf := range this.laterFills {
 		if list, has := m[lf.tagOption.prefix]; has {
 			list = append(list, lf)
+			m[lf.tagOption.prefix] = list
 		} else {
 			m[lf.tagOption.prefix] = []*laterFill{lf}
 		}
 	}
+
 	sort.Sort(this.plugins[worktime])
-	log.Info("[plugins]", this.plugins[worktime]);
 	list := this.plugins[worktime]
 	for _, p := range list {
-		log.Debug("[plugin][load][", worktime, "]:", p.Prefix())
+		log.Println("[plugin][load][", worktime, "]:", p.Prefix())
 		laters := m[p.Prefix()]
 		for _, l := range laters {
 			v := p.Look(l.Holder, l.tagOption.path)
-			log.Debug("[plugin][path]", l.tagOption.path, v.Interface())
+			log.Println("[plugin][path]", l.Holder.class, l.tagOption.path, v.Interface())
 			if !l.filedValue.CanSet() {
 				log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, ",may be an unexported value ")
 				continue
@@ -280,7 +283,7 @@ func (this *basket) pluginWorks(worktime PluginWorkTime) {
 			}
 		}
 	}
-	log.Debug("[plugin][finish]")
+	log.Println("[plugin][finish]")
 }
 func (this *basket) Stone(name string, t reflect.Type) (stone Stone) {
 	if holder, found := this.kv[name]; found {
@@ -344,10 +347,10 @@ func (this *basket) Start() {
 	for _, holders := range this.kv {
 		for _, holder := range holders {
 			if initer, ok := holder.stone.(Init); ok {
-				log.Debug("[init]", holder.class.Name(), holder.stone)
+				log.Println("[init]", holder.class.Name(), holder.stone)
 				initer.Init()
 			}else {
-				log.Debug("[without init]", holder.class.Name(), holder.stone)
+				log.Println("[without init]", holder.class.Name(), holder.stone)
 			}
 		}
 	}
