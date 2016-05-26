@@ -15,10 +15,12 @@ type RefPlugin struct {
 	basket Basket
 }
 
-func (this *RefPlugin) Look(path string) reflect.Value {
+func (this *RefPlugin) Look(Holder *Holder, path string) reflect.Value {
 	stack := strings.Split(path, ".")
 	logrus.Debug("[ref]", path)
-	root := this.basket.NameStone(stack[0])
+	holder := this.basket.NameHolder(stack[0])
+	Holder.depends = append(holder.depends, holder)
+	root := holder.stone
 	value := reflect.ValueOf(root)
 	for index, name := range stack {
 		if index == 0 {
@@ -28,6 +30,7 @@ func (this *RefPlugin) Look(path string) reflect.Value {
 	}
 	return value
 }
+
 func (this *RefPlugin) lookChildren(parent reflect.Value, childrenName string) reflect.Value {
 	pKind := parent.Kind()
 	if pKind == reflect.Ptr {

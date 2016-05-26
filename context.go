@@ -5,7 +5,7 @@ import "reflect"
 type Stone interface{}
 
 type Plugin interface {
-	Look(path string) reflect.Value
+	Look(Holder *Holder,path string) reflect.Value
 	Prefix() string
 	ZIndex() int
 }
@@ -21,6 +21,7 @@ type Basket interface {
 	Put(stone Stone)
 	Stone(name string, t reflect.Type) (stone Stone)
 	NameStone(name string) (stone Stone)
+	NameHolder(name string) (holder *Holder)
 	PluginRegister(Plugin,PluginWorkTime)
 	Start()
 	ShutDown()
