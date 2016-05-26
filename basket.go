@@ -135,6 +135,7 @@ func (this *Holder) buildFiled(filedValue reflect.Value, filedInfo reflect.Struc
 				panic(CannotResolveDependencyErr)
 			}
 		}
+		this.depends = append(this.depends, hd)
 		filedValue.Set(reflect.ValueOf(hd.stone))
 	} else {
 		this.basket.laterFills = append(this.basket.laterFills, &laterFill{filedValue, filedInfo, to, this})
