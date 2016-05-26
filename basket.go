@@ -76,6 +76,7 @@ type tagOption struct {
 func buildTagOptions(tag string) *tagOption {
 	to := &tagOption{}
 	if tag == "*" {
+		to.depend = true
 		to.auto = true
 		return to
 	}
@@ -112,10 +113,15 @@ func (this *holder) buildFiled(filedValue reflect.Value, filedInfo reflect.Struc
 		return
 	}
 	to := buildTagOptions(tag)
+	var name string
+	if to.auto {
+		name = filedInfo.Name
+		name = strings.ToLower(name[:1]) + name[1:]
+	}else {
+		name = to.name
+	}
 	if to.depend {
 		t := filedValue.Type()
-		name := filedInfo.Name
-		name = strings.ToLower(name[:1]) + name[1:]
 		hd := this.basket.holder(name, t)
 		if hd == nil {
 			if t.Kind() == reflect.Ptr {
