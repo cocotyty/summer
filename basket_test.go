@@ -12,8 +12,8 @@ func TestBasket(t *testing.T) {
 	tom, _ := toml.Load(`[postgres]
 user = "pelletier"
 password = "mypassword"`)
-	b.PluginRegister(&TomlPlugin{tom})
-	b.PluginRegister(&RefPlugin{b})
+	b.PluginRegister(&TomlPlugin{tom}, BeforeInit)
+	b.PluginRegister(&RefPlugin{b}, AfterInit)
 	b.Put(&simples.A{})
 	b.Put(&simples.C{})
 	b.Put(&simples.D{})
