@@ -241,6 +241,10 @@ func (this *basket) pluginWorks(worktime PluginWorkTime) {
 		laters := m[p.Prefix()]
 		for _, l := range laters {
 			v := p.Look(l.Holder, l.tagOption.path)
+			if !v.IsValid() {
+				log.Error(p.Prefix(), ".", l.tagOption.path, " not found")
+				continue
+			}
 			log.Println("[plugin][path]", l.Holder.class, l.tagOption.path, v.Interface())
 			if !l.filedValue.CanSet() {
 				log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, ",may be an unexported value ")
