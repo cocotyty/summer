@@ -3,6 +3,8 @@ summer like spring ^_&amp;
 
 ## What is summer ?
 
+![image](https://github.com/cocotyty/summer/raw/master/logo.png)
+
 Summer is a easy tool if you just want a simple IOC/DI framework. Summer work based on tag "sm".
 
 If you want to use summer,you must put stone to the summer basket first,
