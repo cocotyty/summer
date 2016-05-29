@@ -1,6 +1,5 @@
 # summer
-summer after spring ^_&amp;
-## Summer is a IOC/DI tools
+summer like spring ^_&amp;
 
 ## What is summer ?
 
