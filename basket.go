@@ -11,36 +11,24 @@ import (
 var NotSupportStructErr = errors.New("sorry we not support struct now")
 var CannotResolveDependencyErr = errors.New("sorry,stone's dependency missed")
 
-type DelayField struct {
-	filedValue reflect.Value
-	filedInfo  reflect.StructField
-	tagOption  *tagOption
-	Holder     *Holder
-}
-
-type basket struct {
+type Basket struct {
 	kv          map[string][]*Holder
 	delayFields map[string][]*DelayField
 	plugins     map[PluginWorkTime]pluginList
 }
 
-func (this *basket)PutDelayField(field *DelayField) {
+func (this *Basket)PutDelayField(field *DelayField) {
 	list, has := this.delayFields[field.tagOption.prefix]
 	if !has {
 		list = []*DelayField{}
 	}
 	this.delayFields[field.tagOption.prefix] = append(list, field)
 }
-func NewBasket() Basket {
-	return &basket{make(map[string][]*Holder), make(map[string][]*DelayField), make(map[PluginWorkTime]pluginList)}
+func NewBasket() *Basket {
+	return &Basket{make(map[string][]*Holder), make(map[string][]*DelayField), make(map[PluginWorkTime]pluginList)}
 }
-func (this *basket)NameHolder(name string) *Holder {
-	if holders, found := this.kv[name]; found {
-		return holders[0]
-	}
-	return nil
-}
-func (this *basket) Add(name string, stone Stone) {
+// add a stone to basket,the stone must be struct's pointer
+func (this *Basket) Add(name string, stone Stone) {
 	t := reflect.TypeOf(stone)
 	if t.Kind() != reflect.Ptr {
 		panic(NotSupportStructErr)
@@ -51,16 +39,9 @@ func (this *basket) Add(name string, stone Stone) {
 		this.kv[name] = []*Holder{newHolder(stone, this)}
 	}
 }
-func (this *basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
-	log.Debug("[plugin register][", plugin.Prefix(), "]", t)
-	list, ok := this.plugins[t]
-	if !ok {
-		list = pluginList{}
-	}
-	list = append(list, plugin)
-	this.plugins[t] = list
-}
-func (this *basket) Put(stone Stone) {
+// put a stone into basket ,the stone must be struct's pointer,the stone name will be that's type's name with first character lowercase
+// for example,if stone's type is Foo then the stone will get a name that is "foo"
+func (this *Basket) Put(stone Stone) {
 	t := reflect.TypeOf(stone)
 	var name string
 	if t.Kind() == reflect.Ptr {
@@ -69,18 +50,30 @@ func (this *basket) Put(stone Stone) {
 		panic(NotSupportStructErr)
 	}
 	name = strings.ToLower(name[:1]) + name[1:]
+	log.Debug("regitor ", name)
 	if types, found := this.kv[name]; found {
 		this.kv[name] = append(types, newHolder(stone, this))
 	} else {
 		this.kv[name] = []*Holder{newHolder(stone, this)}
 	}
 }
-func (this *basket) ResolveStonesDirectlyDependents() {
+// register a plugin to basket
+func (this *Basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
+	log.Debug("[plugin register][", plugin.Prefix(), "]", t)
+	list, ok := this.plugins[t]
+	if !ok {
+		list = pluginList{}
+	}
+	list = append(list, plugin)
+	this.plugins[t] = list
+}
+
+func (this *Basket) resolveStonesDirectlyDependents() {
 	this.Each(func(holder *Holder) {
 		holder.ResolveDirectlyDependents()
 	})
 }
-func (this *basket) pluginWorks(worktime PluginWorkTime) {
+func (this *Basket) pluginWorks(worktime PluginWorkTime) {
 	log.Debug("[plugin][start-tag-map]")
 	sort.Sort(this.plugins[worktime])
 	// choose which plugins will work at this worktime
@@ -94,7 +87,7 @@ func (this *basket) pluginWorks(worktime PluginWorkTime) {
 	}
 	log.Debug("[plugin][finish]")
 }
-func (this *basket)pluginWork(plugin Plugin, field *DelayField) {
+func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 	// find the value we need from plugin
 	foundValue := plugin.Look(field.Holder, field.tagOption.path)
 	// verify value
@@ -150,7 +143,8 @@ func (this *basket)pluginWork(plugin Plugin, field *DelayField) {
 	}
 	log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
 }
-func (this *basket) Stone(name string, t reflect.Type) (stone Stone) {
+// get a stone from basket
+func (this *Basket) GetStone(name string, t reflect.Type) (stone Stone) {
 	if holder, found := this.kv[name]; found {
 		for _, h := range holder {
 			if stone, has := this.findStone(t, h); has {
@@ -167,13 +161,15 @@ func (this *basket) Stone(name string, t reflect.Type) (stone Stone) {
 	}
 	return nil
 }
-func (this *basket) NameStone(name string) (stone Stone) {
+// get a stone from basket
+func (this *Basket) GetStoneWithName(name string) (stone Stone) {
 	if holders, found := this.kv[name]; found {
 		return holders[0].Stone
 	}
 	return nil
 }
-func (this *basket) findHolder(name string, t reflect.Type) (h *Holder) {
+// get a stone holder from basket
+func (this *Basket) GetStoneHolder(name string, t reflect.Type) (h *Holder) {
 	if holder, found := this.kv[name]; found {
 		for _, h := range holder {
 			if _, has := this.findStone(t, h); has {
@@ -190,7 +186,14 @@ func (this *basket) findHolder(name string, t reflect.Type) (h *Holder) {
 	}
 	return nil
 }
-func (this *basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
+// get a stone holder from basket
+func (this *Basket) GetStoneHolderWithName(name string) *Holder {
+	if holders, found := this.kv[name]; found {
+		return holders[0]
+	}
+	return nil
+}
+func (this *Basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
 	if t.Kind() == reflect.Interface {
 		if reflect.TypeOf(h.Stone).Implements(t) {
 			return h.Stone, true
@@ -205,32 +208,43 @@ func (this *basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
 	}
 	return nil, false
 }
-func (this *basket) Start() {
-	this.ResolveStonesDirectlyDependents()
+// start work
+//
+// # 1 : summer will resolve the direct dependency
+//
+// # 2 : summer will call all stones's Init method<br/>
+// if a directly depend on b, b directly depend on c and d ,then a will init after b init,and b will after c and d
+//
+// # 3 : summer will call all stones's Ready method<br/>
+// if a  depend on b, b  depend on c and d ,then a will init after b init,and b will after c and d
+//
+func (this *Basket) Start() {
+	this.resolveStonesDirectlyDependents()
 	this.pluginWorks(BeforeInit)
 	this.initStones()
 	this.pluginWorks(AfterInit)
 	this.tellStoneReady()
 }
-func (this *basket)initStones() {
+func (this *Basket)initStones() {
 	set := map[*Holder]bool{}
 	this.Each(func(holder *Holder) {
 		holder.init(set)
 	})
 }
-func (this *basket)tellStoneReady() {
+func (this *Basket)tellStoneReady() {
 	set := map[*Holder]bool{}
 	this.Each(func(holder *Holder) {
 		holder.ready(set)
 	})
 }
-func (this *basket) ShutDown() {
+// shutdown will call all stone's Destroy method
+func (this *Basket) ShutDown() {
 	set := map[*Holder]bool{}
 	this.Each(func(holder *Holder) {
 		holder.destroy(set)
 	})
 }
-func (this *basket)Each(fn func(holder *Holder)) {
+func (this *Basket)Each(fn func(holder *Holder)) {
 	for _, holders := range this.kv {
 		for _, holder := range holders {
 			fn(holder)

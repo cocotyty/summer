@@ -1,10 +1,3 @@
-# summer
-summer after spring ^_&amp;
-## Summer is a IOC/DI tools
-
-- simple use:
-
-```go
 package main
 
 import (
@@ -72,12 +65,3 @@ func (c *Cat)Ready(){
 func (c *Cat)Print() {
 	c.Printer.Print("Little Cat")
 }
-```
-
-really * easy *  as you see.
-
-[doc](http://godoc.org/github.com/cocotyty/summer)
-
-if you have questions ,you can send me a email  , my email address  is cocotyty@sina.com 
-
-

@@ -12,15 +12,18 @@ func init() {
 }
 
 type RefPlugin struct {
-	basket Basket
+	basket *Basket
 }
 
 func (this *RefPlugin) Look(Holder *Holder, path string) reflect.Value {
 	stack := strings.Split(path, ".")
-	log.Println("[ref]", path,Holder.Class)
-	holder := this.basket.NameHolder(stack[0])
-	Holder.Dependents = append(holder.Dependents, holder)
-	root := holder.Stone
+	log.Debug("[ref]", path,Holder.Class)
+	foundHolder := this.basket.GetStoneHolderWithName(stack[0])
+	if foundHolder==nil{
+		panic("the "+stack[0]+" not found")
+	}
+	Holder.Dependents = append(Holder.Dependents, foundHolder)
+	root := foundHolder.Stone
 	value := reflect.ValueOf(root)
 	for index, name := range stack {
 		if index == 0 {

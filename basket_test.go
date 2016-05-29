@@ -18,6 +18,6 @@ password = "mypassword"`)
 	b.Put(&simples.C{})
 	b.Put(&simples.D{})
 	b.Start()
-	b.Stone("A", reflect.TypeOf(&simples.A{})).(*simples.A).Print()
+	b.GetStone("A", reflect.TypeOf(&simples.A{})).(*simples.A).Print()
 	b.ShutDown()
 }

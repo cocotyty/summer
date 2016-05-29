@@ -11,11 +11,11 @@ type Holder struct {
 	Class        reflect.Type
 	PointerClass reflect.Type
 	Value        reflect.Value
-	Basket       *basket
+	Basket       *Basket
 	Dependents   []*Holder
 }
 
-func newHolder(stone Stone, basket *basket) *Holder {
+func newHolder(stone Stone, basket *Basket) *Holder {
 	return &Holder{
 		Stone:stone,
 		Class: reflect.TypeOf(stone).Elem(),
@@ -59,7 +59,7 @@ func (this *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo ref
 	// get the field type
 	fieldType := fieldValue.Type()
 	// find the needed stone holder from basket
-	hd := this.Basket.findHolder(name, fieldType)
+	hd := this.Basket.GetStoneHolder(name, fieldType)
 	// if holder not found
 	if hd == nil {
 		// maybe the name is wrong,we suggest the type'name is the stone's name
@@ -69,7 +69,7 @@ func (this *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo ref
 			name = fieldType.Name()
 		}
 		name = strings.ToLower(name[:1]) + name[1:]
-		hd = this.Basket.findHolder(name, fieldType)
+		hd = this.Basket.GetStoneHolder(name, fieldType)
 		if hd == nil {
 			// we don't know what happened ,maybe you forget put the stone into the basket
 			// so just panic
