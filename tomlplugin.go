@@ -4,8 +4,6 @@ import "reflect"
 import (
 	"github.com/pelletier/go-toml"
 )
-
-
 func TomlFile(path string) error {
 	tree, err := toml.LoadFile(path)
 	if err != nil {

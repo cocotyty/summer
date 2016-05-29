@@ -49,7 +49,7 @@ func (this *RefPlugin) lookChildren(parent reflect.Value, childrenName string) r
 		}
 		return parent.Index(c)
 	}
-	panic("sorry i dont know what happend")
+	panic("sorry i dont know what happended")
 }
 
 func (this *RefPlugin) Prefix() string {

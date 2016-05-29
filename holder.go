@@ -38,14 +38,14 @@ func (this *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo ref
 	if tag == "" {
 		return
 	}
-	log.Println("[build Field]", this.Class.Name(), fieldInfo.Name, fieldInfo.Type.Name(), fieldInfo.Tag, tag)
+	log.Debug("[build Field]", this.Class.Name(), fieldInfo.Name, fieldInfo.Type.Name(), fieldInfo.Tag, tag)
 	// convert text to summer tag option
 	tagOption := buildTagOptions(tag)
 	// if the field not a straight depend
 	if !tagOption.depend {
 		// may be the plugin will help it
 		this.Basket.PutDelayField(&DelayField{fieldValue, fieldInfo, tagOption, this})
-		log.Println(this.Class.Name(), " the field [", fieldInfo.Name, "] will be delay. ", tagOption)
+		log.Debug(this.Class.Name(), " the field [", fieldInfo.Name, "] will be delay. ", tagOption)
 		return
 	}
 	// get stone's name which the field wanted
@@ -79,7 +79,7 @@ func (this *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo ref
 	// don't forget to record the dependency of the stone we need
 	this.Dependents = append(this.Dependents, hd)
 	fieldValue.Set(reflect.ValueOf(hd.Stone))
-	log.Println(this.Class.Name(), " depend on ", hd.Class.Name())
+	log.Debug(this.Class.Name(), " depend on ", hd.Class.Name())
 }
 func (this *Holder)init(holders map[*Holder]bool) {
 	if stone, ok := this.Stone.(Init); ok {

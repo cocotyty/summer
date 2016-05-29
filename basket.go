@@ -52,7 +52,7 @@ func (this *basket) Add(name string, stone Stone) {
 	}
 }
 func (this *basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
-	log.Println("[plugin register][", plugin.Prefix(), "]", t)
+	log.Debug("[plugin register][", plugin.Prefix(), "]", t)
 	list, ok := this.plugins[t]
 	if !ok {
 		list = pluginList{}
@@ -81,18 +81,18 @@ func (this *basket) ResolveStonesDirectlyDependents() {
 	})
 }
 func (this *basket) pluginWorks(worktime PluginWorkTime) {
-	log.Println("[plugin][start-tag-map]")
+	log.Debug("[plugin][start-tag-map]")
 	sort.Sort(this.plugins[worktime])
 	// choose which plugins will work at this worktime
 	list := this.plugins[worktime]
 	for _, plugin := range list {
-		log.Println("[plugin][load][", worktime, "]:", plugin.Prefix())
+		log.Debug("[plugin][load][", worktime, "]:", plugin.Prefix())
 		delayList := this.delayFields[plugin.Prefix()]
 		for _, field := range delayList {
 			this.pluginWork(plugin, field)
 		}
 	}
-	log.Println("[plugin][finish]")
+	log.Debug("[plugin][finish]")
 }
 func (this *basket)pluginWork(plugin Plugin, field *DelayField) {
 	// find the value we need from plugin
@@ -107,7 +107,7 @@ func (this *basket)pluginWork(plugin Plugin, field *DelayField) {
 		log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, ",may be an unexported value ")
 		return
 	}
-	log.Println("[plugin][path]", field.Holder.Class, field.tagOption.path, foundValue.Interface())
+	log.Debug("[plugin][path]", field.Holder.Class, field.tagOption.path, foundValue.Interface())
 	if field.filedInfo.Type.Kind() == foundValue.Kind() {
 		field.filedValue.Set(foundValue)
 		return
