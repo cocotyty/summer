@@ -4,17 +4,6 @@ import "reflect"
 
 type Stone interface{}
 
-type Plugin interface {
-	Look(Holder *Holder,path string) reflect.Value
-	Prefix() string
-	ZIndex() int
-}
-type PluginWorkTime int
-
-const (
-	BeforeInit PluginWorkTime = iota
-	AfterInit
-)
 
 type Basket interface {
 	Add(name string, stone Stone)

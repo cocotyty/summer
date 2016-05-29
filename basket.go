@@ -6,170 +6,33 @@ import (
 	"sort"
 	"strings"
 	"qiniupkg.com/x/log.v7"
-	"github.com/pelletier/go-toml"
-	"fmt"
 )
-
-func TomlFile(path string) error {
-	tree, err := toml.LoadFile(path)
-	if err != nil {
-		return err
-	}
-	defaultBasket.PluginRegister(&TomlPlugin{tree}, BeforeInit)
-	return nil
-}
-
-func Toml(src string) error {
-	tree, err := toml.Load(src)
-	if err != nil {
-		return err
-	}
-	defaultBasket.PluginRegister(&TomlPlugin{tree}, BeforeInit)
-	return nil
-}
-
-var defaultBasket = NewBasket()
-
-func Add(name string, stone Stone) {
-	defaultBasket.Add(name, stone)
-}
-func Put(stone Stone) {
-	defaultBasket.Put(stone)
-}
-func GetStone(name string, t reflect.Type) (stone Stone) {
-	return defaultBasket.Stone(name, t)
-
-}
-func NameStone(name string) (stone Stone) {
-	return defaultBasket.NameStone(name)
-}
-func PluginRegister(p Plugin, pt PluginWorkTime) {
-	defaultBasket.PluginRegister(p, pt)
-}
-func Start() {
-	defaultBasket.Start()
-}
-func ShutDown() {
-	defaultBasket.ShutDown()
-}
 
 var NotSupportStructErr = errors.New("sorry we not support struct now")
 var CannotResolveDependencyErr = errors.New("sorry,stone's dependency missed")
 
-type Holder struct {
-	stone        Stone
-	class        reflect.Type
-	pointerClass reflect.Type
-	value        reflect.Value
-	success      bool
-	basket       *basket
-	depends      []*Holder
-}
-type tagOption struct {
-	auto   bool
-	depend bool
-	name   string
-	path   string
-	prefix string
-}
-
-func buildTagOptions(tag string) *tagOption {
-	to := &tagOption{}
-	if tag == "*" {
-		to.depend = true
-		to.auto = true
-		return to
-	}
-	if len(tag) <= 1 {
-		log.Error("bad tag :", tag)
-		return to
-	}
-	if strings.Contains(tag, ".") {
-		to.depend = false
-		to.prefix = tag[:strings.Index(tag, ".")]
-		to.path = tag[strings.Index(tag, ".") + 1:]
-		return to
-	}
-	to.depend = true
-	to.name = tag
-	return to
-}
-func newHolder(stone Stone, basket *basket) *Holder {
-	return &Holder{stone, reflect.TypeOf(stone).Elem(), reflect.TypeOf(stone), reflect.ValueOf(stone).Elem(), false, basket, []*Holder{}}
-}
-func (this *Holder) build() {
-	num := this.value.NumField()
-	num--
-	for ; num >= 0; num-- {
-		this.buildFiled(this.value.Field(num), this.class.Field(num))
-	}
-}
-
-func (this *Holder) buildFiled(filedValue reflect.Value, filedInfo reflect.StructField) {
-	tag := filedInfo.Tag.Get("sm")
-	if tag == "" {
-		return
-	}
-	log.Println("[build Filed]", this.class, filedInfo.Name, filedInfo.Type, filedInfo.Tag, tag)
-	to := buildTagOptions(tag)
-	var name string
-	if to.auto {
-		name = filedInfo.Name
-		name = strings.ToLower(name[:1]) + name[1:]
-	}else {
-		name = to.name
-	}
-	if to.depend {
-		t := filedValue.Type()
-		hd := this.basket.holder(name, t)
-		if hd == nil {
-			if t.Kind() == reflect.Ptr {
-				name = t.Elem().Name()
-			} else {
-				name = t.Name()
-			}
-			name = strings.ToLower(name[:1]) + name[1:]
-			hd = this.basket.holder(name, t)
-			if hd == nil {
-				panic(CannotResolveDependencyErr)
-			}
-		}
-		this.depends = append(this.depends, hd)
-		filedValue.Set(reflect.ValueOf(hd.stone))
-		log.Println(this.class, " depend ", hd.class)
-	} else {
-		log.Println(this.class, filedInfo.Name, "later do ", to)
-		this.basket.laterFills = append(this.basket.laterFills, &laterFill{filedValue, filedInfo, to, this})
-	}
-}
-
-type laterFill struct {
+type DelayField struct {
 	filedValue reflect.Value
 	filedInfo  reflect.StructField
 	tagOption  *tagOption
 	Holder     *Holder
 }
-type pluginList []Plugin
-
-func (list pluginList) Len() int {
-	return len(list)
-}
-func (list pluginList) Less(i, j int) bool {
-	return list[i].ZIndex() < list[j].ZIndex()
-}
-func (list pluginList) Swap(i, j int) {
-	list[i], list[j] = list[j], list[i]
-}
 
 type basket struct {
-	kv         map[string][]*Holder
-	laterFills []*laterFill
-	//board map[string]*holder
-	plugins    map[PluginWorkTime]pluginList
+	kv          map[string][]*Holder
+	delayFields map[string][]*DelayField
+	plugins     map[PluginWorkTime]pluginList
 }
 
+func (this *basket)PutDelayField(field *DelayField) {
+	list, has := this.delayFields[field.tagOption.prefix]
+	if !has {
+		list = []*DelayField{}
+	}
+	this.delayFields[field.tagOption.prefix] = append(list, field)
+}
 func NewBasket() Basket {
-	return &basket{make(map[string][]*Holder), []*laterFill{}, make(map[PluginWorkTime]pluginList)}
+	return &basket{make(map[string][]*Holder), make(map[string][]*DelayField), make(map[PluginWorkTime]pluginList)}
 }
 func (this *basket)NameHolder(name string) *Holder {
 	if holders, found := this.kv[name]; found {
@@ -181,7 +44,6 @@ func (this *basket) Add(name string, stone Stone) {
 	t := reflect.TypeOf(stone)
 	if t.Kind() != reflect.Ptr {
 		panic(NotSupportStructErr)
-
 	}
 	if holders, found := this.kv[name]; found {
 		this.kv[name] = append(holders, newHolder(stone, this))
@@ -190,7 +52,7 @@ func (this *basket) Add(name string, stone Stone) {
 	}
 }
 func (this *basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
-	fmt.Println("[plugin register][", plugin.Prefix(), "]", t)
+	log.Println("[plugin register][", plugin.Prefix(), "]", t)
 	list, ok := this.plugins[t]
 	if !ok {
 		list = pluginList{}
@@ -213,93 +75,92 @@ func (this *basket) Put(stone Stone) {
 		this.kv[name] = []*Holder{newHolder(stone, this)}
 	}
 }
-func (this *basket) build() {
-	for _, holders := range this.kv {
-		for _, h := range holders {
-			h.build()
-		}
-	}
-
+func (this *basket) ResolveStonesDirectlyDependents() {
+	this.Each(func(holder *Holder) {
+		holder.ResolveDirectlyDependents()
+	})
 }
 func (this *basket) pluginWorks(worktime PluginWorkTime) {
 	log.Println("[plugin][start-tag-map]")
-
-	m := map[string][]*laterFill{}
-	for _, lf := range this.laterFills {
-		if list, has := m[lf.tagOption.prefix]; has {
-			list = append(list, lf)
-			m[lf.tagOption.prefix] = list
-		} else {
-			m[lf.tagOption.prefix] = []*laterFill{lf}
-		}
-	}
-
 	sort.Sort(this.plugins[worktime])
+	// choose which plugins will work at this worktime
 	list := this.plugins[worktime]
-	for _, p := range list {
-		log.Println("[plugin][load][", worktime, "]:", p.Prefix())
-		laters := m[p.Prefix()]
-		for _, l := range laters {
-			v := p.Look(l.Holder, l.tagOption.path)
-			if !v.IsValid() {
-				log.Error(p.Prefix(), ".", l.tagOption.path, " not found")
-				continue
-			}
-			log.Println("[plugin][path]", l.Holder.class, l.tagOption.path, v.Interface())
-			if !l.filedValue.CanSet() {
-				log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, ",may be an unexported value ")
-				continue
-			}
-			if l.filedInfo.Type.Kind() != v.Kind() {
-				if l.filedInfo.Type.Kind() == reflect.Ptr && v.Kind() != reflect.Ptr {
-					l.filedValue.Set(v.Addr())
-				}else if l.filedInfo.Type.Kind() != reflect.Ptr && v.Kind() == reflect.Ptr {
-					l.filedValue.Set(v.Elem())
-				}else if ( l.filedInfo.Type.Kind() == reflect.Int || l.filedInfo.Type.Kind() == reflect.Int8 || l.filedInfo.Type.Kind() == reflect.Int16 || l.filedInfo.Type.Kind() == reflect.Int32 || l.filedInfo.Type.Kind() == reflect.Int64) {
-					switch value := v.Interface().(type) {
-					case int8:
-						l.filedValue.SetInt(int64(value))
-					case int16:
-						l.filedValue.SetInt(int64(value))
-					case int32:
-						l.filedValue.SetInt(int64(value))
-					case int64:
-						l.filedValue.SetInt(int64(value))
-					case int:
-						l.filedValue.SetInt(int64(value))
-					default:
-						log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, " because ", l.filedInfo.Type, "!=", v.Kind())
-					}
-				}else if ( v.Kind() == reflect.Float64 || v.Kind() == reflect.Float32 ) {
-					switch value := v.Interface().(type) {
-					case float32:
-						l.filedValue.SetFloat(float64(value))
-					case float64:
-						l.filedValue.SetFloat(float64(value))
-					default:
-						log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, " because ", l.filedInfo.Type, "!=", v.Kind())
-					}
-				}else {
-					log.Error("can not set the value ", l.filedInfo.Name, " tag:", l.filedInfo.Tag, " because ", l.filedInfo.Type, "!=", v.Kind())
-				}
-			} else {
-				l.filedValue.Set(v)
-			}
+	for _, plugin := range list {
+		log.Println("[plugin][load][", worktime, "]:", plugin.Prefix())
+		delayList := this.delayFields[plugin.Prefix()]
+		for _, field := range delayList {
+			this.pluginWork(plugin, field)
 		}
 	}
 	log.Println("[plugin][finish]")
 }
+func (this *basket)pluginWork(plugin Plugin, field *DelayField) {
+	// find the value we need from plugin
+	foundValue := plugin.Look(field.Holder, field.tagOption.path)
+	// verify value
+	if !foundValue.IsValid() {
+		log.Error(plugin.Prefix(), ".", field.tagOption.path, " not found")
+		return
+	}
+	// verify if the field can set a value
+	if !field.filedValue.CanSet() {
+		log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, ",may be an unexported value ")
+		return
+	}
+	log.Println("[plugin][path]", field.Holder.Class, field.tagOption.path, foundValue.Interface())
+	if field.filedInfo.Type.Kind() == foundValue.Kind() {
+		field.filedValue.Set(foundValue)
+		return
+	}
+	if field.filedInfo.Type.Kind() == reflect.Ptr && foundValue.Kind() != reflect.Ptr {
+		field.filedValue.Set(foundValue.Addr())
+		return
+	}
+	if field.filedInfo.Type.Kind() != reflect.Ptr && foundValue.Kind() == reflect.Ptr {
+		field.filedValue.Set(foundValue.Elem())
+		return
+	}
+	if ( field.filedInfo.Type.Kind() == reflect.Int || field.filedInfo.Type.Kind() == reflect.Int8 || field.filedInfo.Type.Kind() == reflect.Int16 || field.filedInfo.Type.Kind() == reflect.Int32 || field.filedInfo.Type.Kind() == reflect.Int64) {
+		switch value := foundValue.Interface().(type) {
+		case int:
+			field.filedValue.SetInt(int64(value))
+		case int8:
+			field.filedValue.SetInt(int64(value))
+		case int16:
+			field.filedValue.SetInt(int64(value))
+		case int32:
+			field.filedValue.SetInt(int64(value))
+		case int64:
+			field.filedValue.SetInt(int64(value))
+		default:
+			log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+		}
+		return
+	}
+	if ( foundValue.Kind() == reflect.Float64 || foundValue.Kind() == reflect.Float32 ) {
+		switch value := foundValue.Interface().(type) {
+		case float32:
+			field.filedValue.SetFloat(float64(value))
+		case float64:
+			field.filedValue.SetFloat(float64(value))
+		default:
+			log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+		}
+		return
+	}
+	log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+}
 func (this *basket) Stone(name string, t reflect.Type) (stone Stone) {
 	if holder, found := this.kv[name]; found {
 		for _, h := range holder {
-			if stone, has := this.find(t, h); has {
+			if stone, has := this.findStone(t, h); has {
 				return stone
 			}
 		}
 	}
 	for _, holder := range this.kv {
 		for _, h := range holder {
-			if stone, has := this.find(t, h); has {
+			if stone, has := this.findStone(t, h); has {
 				return stone
 			}
 		}
@@ -308,82 +169,71 @@ func (this *basket) Stone(name string, t reflect.Type) (stone Stone) {
 }
 func (this *basket) NameStone(name string) (stone Stone) {
 	if holders, found := this.kv[name]; found {
-		return holders[0].stone
+		return holders[0].Stone
 	}
 	return nil
 }
-func (this *basket) holder(name string, t reflect.Type) (h *Holder) {
+func (this *basket) findHolder(name string, t reflect.Type) (h *Holder) {
 	if holder, found := this.kv[name]; found {
 		for _, h := range holder {
-			if _, has := this.find(t, h); has {
+			if _, has := this.findStone(t, h); has {
 				return h
 			}
 		}
 	}
 	for _, holder := range this.kv {
 		for _, h := range holder {
-			if _, has := this.find(t, h); has {
+			if _, has := this.findStone(t, h); has {
 				return h
 			}
 		}
 	}
 	return nil
 }
-func (this *basket) find(t reflect.Type, h *Holder) (Stone, bool) {
+func (this *basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
 	if t.Kind() == reflect.Interface {
-		if reflect.TypeOf(h.stone).Implements(t) {
-			return h.stone, true
+		if reflect.TypeOf(h.Stone).Implements(t) {
+			return h.Stone, true
 		}
 		return nil, false
 	}
 	if t.Kind() == reflect.Struct {
 		t = reflect.PtrTo(t)
 	}
-	if h.pointerClass.AssignableTo(t) && h.pointerClass.ConvertibleTo(t) {
-		return h.stone, true
+	if h.PointerClass.AssignableTo(t) && h.PointerClass.ConvertibleTo(t) {
+		return h.Stone, true
 	}
 	return nil, false
 }
-
 func (this *basket) Start() {
-	this.build()
+	this.ResolveStonesDirectlyDependents()
 	this.pluginWorks(BeforeInit)
-	for _, holders := range this.kv {
-		for _, holder := range holders {
-			if initer, ok := holder.stone.(Init); ok {
-				log.Println("[init]", holder.class.Name(), holder.stone)
-				initer.Init()
-			}else {
-				log.Println("[without init]", holder.class.Name(), holder.stone)
-			}
-		}
-	}
+	this.initStones()
 	this.pluginWorks(AfterInit)
-	set := map[*Holder]bool{}
-	for _, holders := range this.kv {
-		for _, holder := range holders {
-			holder.ready(set)
-		}
-	}
+	this.tellStoneReady()
 }
-func (this *Holder)ready(holders map[*Holder]bool) {
-	if initer, ok := this.stone.(Ready); ok {
-		if holders[this] {
-			return
-		}
-		holders[this] = true
-		for _, v := range this.depends {
-			v.ready(holders)
-		}
-		initer.Ready()
-	}
+func (this *basket)initStones() {
+	set := map[*Holder]bool{}
+	this.Each(func(holder *Holder) {
+		holder.init(set)
+	})
+}
+func (this *basket)tellStoneReady() {
+	set := map[*Holder]bool{}
+	this.Each(func(holder *Holder) {
+		holder.ready(set)
+	})
 }
 func (this *basket) ShutDown() {
+	set := map[*Holder]bool{}
+	this.Each(func(holder *Holder) {
+		holder.destroy(set)
+	})
+}
+func (this *basket)Each(fn func(holder *Holder)) {
 	for _, holders := range this.kv {
 		for _, holder := range holders {
-			if initer, ok := holder.stone.(Destroy); ok {
-				initer.Destroy()
-			}
+			fn(holder)
 		}
 	}
 }

@@ -17,10 +17,10 @@ type RefPlugin struct {
 
 func (this *RefPlugin) Look(Holder *Holder, path string) reflect.Value {
 	stack := strings.Split(path, ".")
-	log.Println("[ref]", path,Holder.class)
+	log.Println("[ref]", path,Holder.Class)
 	holder := this.basket.NameHolder(stack[0])
-	Holder.depends = append(holder.depends, holder)
-	root := holder.stone
+	Holder.Dependents = append(holder.Dependents, holder)
+	root := holder.Stone
 	value := reflect.ValueOf(root)
 	for index, name := range stack {
 		if index == 0 {

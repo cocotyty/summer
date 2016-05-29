@@ -6,6 +6,24 @@ import (
 )
 
 
+func TomlFile(path string) error {
+	tree, err := toml.LoadFile(path)
+	if err != nil {
+		return err
+	}
+	defaultBasket.PluginRegister(&TomlPlugin{tree}, BeforeInit)
+	return nil
+}
+
+func Toml(src string) error {
+	tree, err := toml.Load(src)
+	if err != nil {
+		return err
+	}
+	defaultBasket.PluginRegister(&TomlPlugin{tree}, BeforeInit)
+	return nil
+}
+
 type TomlPlugin struct {
 	tree *toml.TomlTree
 }
