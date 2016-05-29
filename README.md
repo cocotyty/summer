@@ -91,6 +91,13 @@ func (c *Cat)Print() {
 }
 ```
 
+output:
+```text
+my name is cat,i am ready.
+[PRINT]Little Cat
+hi ,I am A
+```
+
 really * easy *  as you see.
 
 [doc](http://godoc.org/github.com/cocotyty/summer)
