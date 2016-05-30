@@ -88,7 +88,7 @@ func (this *Holder)init(holders map[*Holder]bool) {
 		}
 		holders[this] = true
 		for _, v := range this.Dependents {
-			v.ready(holders)
+			v.init(holders)
 		}
 		stone.Init()
 	}
