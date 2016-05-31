@@ -10,7 +10,7 @@ func init() {
 	[printer]
 	prefix="[PRINT]"`)
 	summer.Put(&A{})
-	summer.Put(&B{})
+	summer.Add("lay", &B{})
 	summer.Put(&Cat{})
 	summer.Put(&Printer{})
 	summer.Start()
@@ -23,14 +23,16 @@ func main() {
 
 type A struct {
 	// $ means you want to get a stone's field , it happened usually after stones inited
-	BoyName string `sm:"$.b.Name"`
+	BoyName string `sm:"$.lay.Name"`
+	B       *B `sm:"lay"`
 	// yes,we support interface ,tag is stone's name
 	C       C `sm:"cat"`
 }
 
 func (a *A)Call() {
 	a.C.Print()
-	fmt.Println("hi ,I am A")
+	fmt.Println("hi ,I am A", "bodys name:", a.BoyName)
+	fmt.Println(a.B)
 }
 
 type B struct {
@@ -59,7 +61,8 @@ type Cat struct {
 	// * is mostly used tag,summer will find by the field's name  or the field's type or both
 	Printer *Printer `sm:"*"`
 }
-func (c *Cat)Ready(){
+
+func (c *Cat)Ready() {
 	fmt.Println("my name is cat,i am ready.")
 }
 func (c *Cat)Print() {

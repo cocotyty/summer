@@ -9,6 +9,7 @@ import (
 )
 
 var NotSupportStructErr = errors.New("sorry we not support struct now")
+var NotSupportContainsDot = errors.New("sorry we not support name contains a dot")
 var CannotResolveDependencyErr = errors.New("sorry,stone's dependency missed")
 
 type Basket struct {
@@ -29,6 +30,9 @@ func NewBasket() *Basket {
 }
 // add a stone to basket,the stone must be struct's pointer
 func (this *Basket) Add(name string, stone Stone) {
+	if strings.Contains(name, ".") {
+		panic(NotSupportContainsDot)
+	}
 	t := reflect.TypeOf(stone)
 	if t.Kind() != reflect.Ptr {
 		panic(NotSupportStructErr)
