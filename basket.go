@@ -5,7 +5,6 @@ import (
 	"reflect"
 	"sort"
 	"strings"
-	"qiniupkg.com/x/log.v7"
 )
 
 var NotSupportStructErr = errors.New("sorry we not support struct now")
@@ -54,7 +53,7 @@ func (this *Basket) Put(stone Stone) {
 		panic(NotSupportStructErr)
 	}
 	name = strings.ToLower(name[:1]) + name[1:]
-	log.Debug("regitor ", name)
+	logger.Debug("regitor ", name)
 	if types, found := this.kv[name]; found {
 		this.kv[name] = append(types, newHolder(stone, this))
 	} else {
@@ -63,7 +62,7 @@ func (this *Basket) Put(stone Stone) {
 }
 // register a plugin to basket
 func (this *Basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
-	log.Debug("[plugin register][", plugin.Prefix(), "]", t)
+	logger.Debug("[plugin register][", plugin.Prefix(), "]", t)
 	list, ok := this.plugins[t]
 	if !ok {
 		list = pluginList{}
@@ -78,33 +77,33 @@ func (this *Basket) resolveStonesDirectlyDependents() {
 	})
 }
 func (this *Basket) pluginWorks(worktime PluginWorkTime) {
-	log.Debug("[plugin][start-tag-map]")
+	logger.Debug("[plugin][start-tag-map]")
 	sort.Sort(this.plugins[worktime])
 	// choose which plugins will work at this worktime
 	list := this.plugins[worktime]
 	for _, plugin := range list {
-		log.Debug("[plugin][load][", worktime, "]:", plugin.Prefix())
+		logger.Debug("[plugin][load][", worktime, "]:", plugin.Prefix())
 		delayList := this.delayFields[plugin.Prefix()]
 		for _, field := range delayList {
 			this.pluginWork(plugin, field)
 		}
 	}
-	log.Debug("[plugin][finish]")
+	logger.Debug("[plugin][finish]")
 }
 func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 	// find the value we need from plugin
 	foundValue := plugin.Look(field.Holder, field.tagOption.path)
 	// verify value
 	if !foundValue.IsValid() {
-		log.Error(plugin.Prefix(), ".", field.tagOption.path, " not found")
+		logger.Error(plugin.Prefix(), ".", field.tagOption.path, " not found")
 		return
 	}
 	// verify if the field can set a value
 	if !field.filedValue.CanSet() {
-		log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, ",may be an unexported value ")
+		logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, ",may be an unexported value ")
 		return
 	}
-	log.Debug("[plugin][path]", field.Holder.Class, field.tagOption.path, foundValue.Interface())
+	logger.Debug("[plugin][path]", field.Holder.Class, field.tagOption.path, foundValue.Interface())
 	if field.filedInfo.Type.Kind() == foundValue.Kind() {
 		field.filedValue.Set(foundValue)
 		return
@@ -130,7 +129,7 @@ func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 		case int64:
 			field.filedValue.SetInt(int64(value))
 		default:
-			log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+			logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
 		}
 		return
 	}
@@ -141,11 +140,11 @@ func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 		case float64:
 			field.filedValue.SetFloat(float64(value))
 		default:
-			log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+			logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
 		}
 		return
 	}
-	log.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+	logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
 }
 // get a stone from basket
 func (this *Basket) GetStone(name string, t reflect.Type) (stone Stone) {

@@ -4,7 +4,6 @@ import (
 	"reflect"
 	"strconv"
 	"strings"
-"qiniupkg.com/x/log.v7"
 )
 
 func init() {
@@ -17,7 +16,7 @@ type RefPlugin struct {
 
 func (this *RefPlugin) Look(Holder *Holder, path string) reflect.Value {
 	stack := strings.Split(path, ".")
-	log.Debug("[ref]", path,Holder.Class)
+	logger.Debug("[ref]", path,Holder.Class)
 	foundHolder := this.basket.GetStoneHolderWithName(stack[0])
 	if foundHolder==nil{
 		panic("the "+stack[0]+" not found")

@@ -2,7 +2,6 @@ package summer
 
 import (
 	"strings"
-	"qiniupkg.com/x/log.v7"
 )
 
 type tagOption struct {
@@ -21,7 +20,7 @@ func buildTagOptions(tag string) *tagOption {
 		return to
 	}
 	if len(tag) <= 1 {
-		log.Error("bad tag :", tag)
+		logger.Error("bad tag :", tag)
 		return to
 	}
 	if strings.Contains(tag, ".") {
