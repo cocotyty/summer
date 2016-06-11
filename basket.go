@@ -108,6 +108,12 @@ func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 		field.filedValue.Set(foundValue)
 		return
 	}
+	if field.filedInfo.Type.Kind() == reflect.Interface {
+		if foundValue.Type().AssignableTo(field.filedInfo.Type)&&foundValue.Type().ConvertibleTo(field.filedInfo.Type) {
+			field.filedValue.Set(foundValue)
+			return
+		}
+	}
 	if field.filedInfo.Type.Kind() == reflect.Ptr && foundValue.Kind() != reflect.Ptr {
 		field.filedValue.Set(foundValue.Addr())
 		return

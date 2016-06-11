@@ -27,6 +27,7 @@ type A struct {
 	B       *B `sm:"lay"`
 	// yes,we support interface ,tag is stone's name
 	C       C `sm:"cat"`
+	C2      C  `sm:"$.lay.Cat"`
 }
 
 func (a *A)Call() {
@@ -34,9 +35,15 @@ func (a *A)Call() {
 	fmt.Println("hi ,I am A", "bodys name:", a.BoyName)
 	fmt.Println(a.B)
 }
+func (a *A)Ready() {
+	fmt.Println("a is ready")
+	a.C2.Print()
+	fmt.Println("a.C2 is ok")
+}
 
 type B struct {
 	Name string
+	Cat  *Cat `sm:"*"`
 }
 
 func (this *B)Init() {
