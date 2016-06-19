@@ -25,7 +25,7 @@ type SimpleLog struct {
 func NewSimpleLog(module string,logLevel LogLevel) *SimpleLog {
 	return &SimpleLog{log:log.New(os.Stderr, "["+module+"]", log.LstdFlags), level:InfoLevel}
 }
-func ( sl  SimpleLog)SetLevel(logLevel LogLevel) {
+func (sl *SimpleLog)SetLevel(logLevel LogLevel) {
 	sl.level = logLevel
 }
 func SetLogLevel(logLevel LogLevel) {
