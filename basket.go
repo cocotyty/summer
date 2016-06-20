@@ -92,7 +92,7 @@ func (this *Basket) pluginWorks(worktime PluginWorkTime) {
 }
 func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 	// find the value we need from plugin
-	foundValue := plugin.Look(field.Holder, field.tagOption.path)
+	foundValue := plugin.Look(field.Holder, field.tagOption.path,&field.filedInfo)
 	// verify value
 	if !foundValue.IsValid() {
 		logger.Error(plugin.Prefix(), ".", field.tagOption.path, " not found")
@@ -203,6 +203,7 @@ func (this *Basket) GetStoneHolderWithName(name string) *Holder {
 	return nil
 }
 func (this *Basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
+	logger.Debug(t,h.Class)
 	if t.Kind() == reflect.Interface {
 		if reflect.TypeOf(h.Stone).Implements(t) {
 			return h.Stone, true
@@ -257,6 +258,15 @@ func (this *Basket)Each(fn func(holder *Holder)) {
 	for _, holders := range this.kv {
 		for _, holder := range holders {
 			fn(holder)
+		}
+	}
+}
+func (this *Basket)EachHolder(fn func(name string,holder *Holder)bool){
+	for name, holders := range this.kv {
+		for _, holder := range holders {
+			if fn(name,holder){
+				return
+			}
 		}
 	}
 }
