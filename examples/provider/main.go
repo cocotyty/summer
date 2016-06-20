@@ -9,6 +9,7 @@ import (
 func main() {
 	summer.Put(&P{})
 	summer.Put(&PrinterProvider{})
+	summer.Add("P",&PrinterProvider{prefix:"[p!]"})
 	summer.Start()
 }
 type Printer interface {
@@ -28,11 +29,12 @@ func (p *P)Ready() {
 }
 
 type PrinterProvider struct {
+	prefix string
 	logger *log.Logger
 }
 
 func (pp *PrinterProvider)Init() {
-	pp.logger = log.New(os.Stderr, "", log.LstdFlags)
+	pp.logger = log.New(os.Stderr, pp.prefix, log.LstdFlags)
 }
 func (pp *PrinterProvider)Provide() interface{} {
 	return pp.logger
