@@ -16,20 +16,33 @@ const (
 	FatalLevel
 )
 
-var logger = NewSimpleLog("summer",InfoLevel)
+var logger = NewSimpleLog("summer", InfoLevel)
+
+type SimpleLogger struct {
+	level LogLevel
+}
+
+func NewSimpleLogger(logLevel LogLevel) *SimpleLogger {
+	return &SimpleLogger{logLevel}
+}
+func (sl *SimpleLogger)Module(module string) (*SimpleLog) {
+	return &SimpleLog{log:log.New(os.Stderr, "[" + module + "]", log.LstdFlags), level:sl.level}
+}
+
 type SimpleLog struct {
 	log   *log.Logger
 	level LogLevel
 }
 
-func NewSimpleLog(module string,logLevel LogLevel) *SimpleLog {
-	return &SimpleLog{log:log.New(os.Stderr, "["+module+"]", log.LstdFlags), level:InfoLevel}
+func NewSimpleLog(module string, logLevel LogLevel) *SimpleLog {
+	return &SimpleLog{log:log.New(os.Stderr, "[" + module + "]", log.LstdFlags), level:InfoLevel}
 }
-func (sl *SimpleLog)SetLevel(logLevel LogLevel) {
+func (sl *SimpleLog)SetLevel(logLevel LogLevel) (*SimpleLog) {
 	sl.level = logLevel
+	return sl
 }
 func SetLogLevel(logLevel LogLevel) {
-	logger.SetLevel( logLevel)
+	logger.SetLevel(logLevel)
 }
 func (log *SimpleLog)Debug(args ... interface{}) {
 	if DebugLevel < log.level {
