@@ -15,6 +15,16 @@ type Holder struct {
 }
 
 func newHolder(stone Stone, basket *Basket) *Holder {
+	if reflect.TypeOf(stone).Kind() == reflect.Func {
+		return &Holder{
+			Stone:stone,
+			Class: reflect.TypeOf(stone),
+			PointerClass: reflect.TypeOf(stone),
+			Value: reflect.ValueOf(stone),
+			Basket: basket,
+			Dependents: []*Holder{},
+		}
+	}
 	return &Holder{
 		Stone:stone,
 		Class: reflect.TypeOf(stone).Elem(),
@@ -25,6 +35,10 @@ func newHolder(stone Stone, basket *Basket) *Holder {
 	}
 }
 func (this *Holder) ResolveDirectlyDependents() {
+	logger.Debug("ResolveDirectlyDependents", this.Value)
+	if this.Class.Kind() == reflect.Func {
+		return
+	}
 	num := this.Value.NumField() - 1
 	for ; num >= 0; num-- {
 		this.SetDirectDependValue(this.Value.Field(num), this.Class.Field(num))
