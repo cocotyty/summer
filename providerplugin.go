@@ -14,7 +14,7 @@ type ProviderPlugin struct {
 
 }
 
-func (this *ProviderPlugin)    Look(holder *Holder, path string, sf *reflect.StructField) (need reflect.Value) {
+func (this *ProviderPlugin)Look(holder *Holder, path string, sf *reflect.StructField) (need reflect.Value) {
 	if path == "*" {
 		path = sf.Name
 	}
@@ -32,6 +32,9 @@ func (this *ProviderPlugin)    Look(holder *Holder, path string, sf *reflect.Str
 		}
 		return false
 	});
+	if need == nil {
+		panic("provider not found:" + holder.Class.Name() + "." + sf.Name + " @." + path)
+	}
 	return need
 }
 func (this *ProviderPlugin)    Prefix() string {
