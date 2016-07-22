@@ -205,7 +205,7 @@ func (this *Basket) GetStoneHolderWithName(name string) *Holder {
 	return nil
 }
 func (this *Basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
-	logger.Debug(t, h.Class)
+	logger.Debug(t.PkgPath(), t, h.Class)
 	if t.Kind() == reflect.Interface {
 		if reflect.TypeOf(h.Stone).Implements(t) {
 			return h.Stone, true
