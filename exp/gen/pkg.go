@@ -18,6 +18,7 @@ type Plugin interface {
 	Handle(writer *bytes.Buffer, imports *bytes.Buffer, spec *ast.TypeSpec, tag string, path string, pkg string)
 }
 type PluginList []Plugin
+
 type GenCode struct {
 	RootPath   string
 	WorkPath   string

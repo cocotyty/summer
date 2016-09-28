@@ -9,7 +9,6 @@ import (
 
 var NotSupportStructErr = errors.New("sorry we not support struct now")
 var NotSupportContainsDot = errors.New("sorry we not support name contains a dot")
-var CannotResolveDependencyErr = errors.New("sorry,stone's dependency missed")
 
 type Basket struct {
 	kv          map[string][]*Holder
