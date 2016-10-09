@@ -16,7 +16,7 @@ type Basket struct {
 	plugins     map[PluginWorkTime]pluginList
 }
 
-func (this *Basket)PutDelayField(field *DelayField) {
+func (this *Basket) PutDelayField(field *DelayField) {
 	list, has := this.delayFields[field.tagOption.prefix]
 	if !has {
 		list = []*DelayField{}
@@ -26,13 +26,15 @@ func (this *Basket)PutDelayField(field *DelayField) {
 func NewBasket() *Basket {
 	return &Basket{make(map[string][]*Holder), make(map[string][]*DelayField), make(map[PluginWorkTime]pluginList)}
 }
+
 // add a stone to basket,the stone must be struct's pointer
 func (this *Basket) Add(name string, stone Stone) {
 	if strings.Contains(name, ".") {
 		panic(NotSupportContainsDot)
 	}
 	t := reflect.TypeOf(stone)
-	if t.Kind() != reflect.Ptr {
+	storeKind:=t.Kind()
+	if storeKind != reflect.Ptr && storeKind != reflect.Func {
 		panic(NotSupportStructErr)
 	}
 	if holders, found := this.kv[name]; found {
@@ -41,6 +43,7 @@ func (this *Basket) Add(name string, stone Stone) {
 		this.kv[name] = []*Holder{newHolder(stone, this)}
 	}
 }
+
 // put a stone into basket ,the stone must be struct's pointer,the stone name will be that's type's name with first character lowercase
 // for example,if stone's type is Foo then the stone will get a name that is "foo"
 func (this *Basket) Put(stone Stone) {
@@ -54,13 +57,14 @@ func (this *Basket) Put(stone Stone) {
 		panic(NotSupportStructErr)
 	}
 	name = strings.ToLower(name[:1]) + name[1:]
-	logger.Debug("regitor ", name)
+	logger.Debug("registor ", name)
 	if types, found := this.kv[name]; found {
 		this.kv[name] = append(types, newHolder(stone, this))
 	} else {
 		this.kv[name] = []*Holder{newHolder(stone, this)}
 	}
 }
+
 // register a plugin to basket
 func (this *Basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
 	logger.Debug("[plugin register][", plugin.Prefix(), "]", t)
@@ -110,7 +114,7 @@ func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 		return
 	}
 	if field.filedInfo.Type.Kind() == reflect.Interface {
-		if foundValue.Type().AssignableTo(field.filedInfo.Type)&&foundValue.Type().ConvertibleTo(field.filedInfo.Type) {
+		if foundValue.Type().AssignableTo(field.filedInfo.Type) && foundValue.Type().ConvertibleTo(field.filedInfo.Type) {
 			field.filedValue.Set(foundValue)
 			return
 		}
@@ -123,7 +127,7 @@ func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 		field.filedValue.Set(foundValue.Elem())
 		return
 	}
-	if ( field.filedInfo.Type.Kind() == reflect.Int || field.filedInfo.Type.Kind() == reflect.Int8 || field.filedInfo.Type.Kind() == reflect.Int16 || field.filedInfo.Type.Kind() == reflect.Int32 || field.filedInfo.Type.Kind() == reflect.Int64) {
+	if field.filedInfo.Type.Kind() == reflect.Int || field.filedInfo.Type.Kind() == reflect.Int8 || field.filedInfo.Type.Kind() == reflect.Int16 || field.filedInfo.Type.Kind() == reflect.Int32 || field.filedInfo.Type.Kind() == reflect.Int64 {
 		switch value := foundValue.Interface().(type) {
 		case int:
 			field.filedValue.SetInt(int64(value))
@@ -140,7 +144,7 @@ func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 		}
 		return
 	}
-	if ( foundValue.Kind() == reflect.Float64 || foundValue.Kind() == reflect.Float32 ) {
+	if foundValue.Kind() == reflect.Float64 || foundValue.Kind() == reflect.Float32 {
 		switch value := foundValue.Interface().(type) {
 		case float32:
 			field.filedValue.SetFloat(float64(value))
@@ -153,6 +157,7 @@ func (this *Basket) pluginWork(plugin Plugin, field *DelayField) {
 	}
 	logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
 }
+
 // get a stone from basket
 func (this *Basket) GetStone(name string, t reflect.Type) (stone Stone) {
 	if holder, found := this.kv[name]; found {
@@ -171,6 +176,7 @@ func (this *Basket) GetStone(name string, t reflect.Type) (stone Stone) {
 	}
 	return nil
 }
+
 // get a stone from basket
 func (this *Basket) GetStoneWithName(name string) (stone Stone) {
 	if holders, found := this.kv[name]; found {
@@ -178,6 +184,7 @@ func (this *Basket) GetStoneWithName(name string) (stone Stone) {
 	}
 	return nil
 }
+
 // get a stone holder from basket
 func (this *Basket) GetStoneHolder(name string, t reflect.Type) (h *Holder) {
 	if holder, found := this.kv[name]; found {
@@ -196,6 +203,7 @@ func (this *Basket) GetStoneHolder(name string, t reflect.Type) (h *Holder) {
 	}
 	return nil
 }
+
 // get a stone holder from basket
 func (this *Basket) GetStoneHolderWithName(name string) *Holder {
 	if holders, found := this.kv[name]; found {
@@ -219,6 +227,7 @@ func (this *Basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
 	}
 	return nil, false
 }
+
 // start work
 //
 // # 1 : summer will resolve the direct dependency
@@ -236,18 +245,19 @@ func (this *Basket) Start() {
 	this.pluginWorks(AfterInit)
 	this.tellStoneReady()
 }
-func (this *Basket)initStones() {
+func (this *Basket) initStones() {
 	set := map[*Holder]bool{}
 	this.Each(func(holder *Holder) {
 		holder.init(set)
 	})
 }
-func (this *Basket)tellStoneReady() {
+func (this *Basket) tellStoneReady() {
 	set := map[*Holder]bool{}
 	this.Each(func(holder *Holder) {
 		holder.ready(set)
 	})
 }
+
 // shutdown will call all stone's Destroy method
 func (this *Basket) ShutDown() {
 	set := map[*Holder]bool{}
@@ -255,14 +265,14 @@ func (this *Basket) ShutDown() {
 		holder.destroy(set)
 	})
 }
-func (this *Basket)Each(fn func(holder *Holder)) {
+func (this *Basket) Each(fn func(holder *Holder)) {
 	for _, holders := range this.kv {
 		for _, holder := range holders {
 			fn(holder)
 		}
 	}
 }
-func (this *Basket)EachHolder(fn func(name string, holder *Holder) bool) {
+func (this *Basket) EachHolder(fn func(name string, holder *Holder) bool) {
 	for name, holders := range this.kv {
 		for _, holder := range holders {
 			if fn(name, holder) {
