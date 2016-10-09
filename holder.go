@@ -3,6 +3,7 @@ package summer
 import (
 	"reflect"
 	"strings"
+	"errors"
 )
 // a holder that can hold stone
 type Holder struct {
@@ -86,7 +87,7 @@ func (this *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo ref
 		if hd == nil {
 			// we don't know what happened ,maybe you forget put the stone into the basket
 			// so just panic
-			panic(CannotResolveDependencyErr)
+			panic(errors.New("sorry,stone's dependency missed: " + fieldInfo.Name + ",type " + fieldType.Name()))
 		}
 	}
 	// don't forget to record the dependency of the stone we need
