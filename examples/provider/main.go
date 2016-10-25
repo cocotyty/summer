@@ -7,7 +7,7 @@ import (
 )
 
 func main() {
-	summer.Put(&P{})
+	summer.Put(&P{},"P")
 	summer.Put(&PrinterProvider{})
 	summer.Add("P",&PrinterProvider{prefix:"[p!]"})
 	summer.Start()
@@ -18,7 +18,7 @@ type Printer interface {
 
 type P struct {
 	Printer Printer `sm:"@.*"`
-	Pr      Printer `sm:"@.P"`
+	Pr      Printer `sm:"@.(.)"`
 	P       Printer `sm:"@.*"`
 }
 
