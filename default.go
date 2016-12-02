@@ -11,7 +11,7 @@ func AddNotStrict(name string, stone Stone, value ...interface{}) {
 		defaultBasket.AddNotStrict(name, stone, value[0])
 	}
 }
-func PutNotStrict(name string, stone Stone, value ...interface{}) {
+func PutNotStrict(stone Stone, value ...interface{}) {
 	if len(value) == 0 {
 		defaultBasket.PutNotStrict(stone, nil)
 	} else {
