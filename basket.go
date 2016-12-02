@@ -35,12 +35,18 @@ func NewBasket() *Basket {
 		delayFields: make(map[string][]*DelayField),
 		plugins:     make(map[PluginWorkTime]pluginList)}
 }
+func (basket *Basket) AddNotStrict(name string, stone Stone, value interface{}) {
+	basket.AddWithValue(name, stone, value, true)
+}
+func (basket *Basket) PutNotStrict(stone Stone, value interface{}) {
+	basket.PutWithValue(stone, value, true)
+}
 
 // add a stone to basket,the stone must be struct's pointer
 func (basket *Basket) Add(name string, stone Stone) {
-	basket.AddWithValue(name, stone, nil)
+	basket.AddWithValue(name, stone, nil, false)
 }
-func (basket *Basket) AddWithValue(name string, stone Stone, root interface{}) {
+func (basket *Basket) AddWithValue(name string, stone Stone, root interface{}, ignoreStrict bool) {
 	if strings.Contains(name, ".") {
 		panic(NotSupportContainsDot)
 	}
@@ -50,6 +56,7 @@ func (basket *Basket) AddWithValue(name string, stone Stone, root interface{}) {
 		panic(NotSupportStructErr)
 	}
 	holder := newHolder(stone, basket)
+	holder.ignoreStrict = ignoreStrict
 	if holders, found := basket.kv[name]; found {
 		basket.kv[name] = append(holders, holder)
 	} else {
@@ -58,7 +65,7 @@ func (basket *Basket) AddWithValue(name string, stone Stone, root interface{}) {
 	holder.PreTagRootValue = root
 }
 
-func (basket *Basket) PutWithValue(stone Stone, root interface{}) {
+func (basket *Basket) PutWithValue(stone Stone, root interface{}, ignoreStrict bool) {
 	t := reflect.TypeOf(stone)
 	var name string
 	if t.Kind() == reflect.Ptr {
@@ -70,13 +77,13 @@ func (basket *Basket) PutWithValue(stone Stone, root interface{}) {
 	}
 	name = strings.ToLower(name[:1]) + name[1:]
 	logger.Debug("registor ", name)
-	basket.AddWithValue(name, stone, root)
+	basket.AddWithValue(name, stone, root, ignoreStrict)
 }
 
 // put a stone into basket ,the stone must be struct's pointer,the stone name will be that's type's name with first character lowercase
 // for example,if stone's type is Foo then the stone will get a name that is "foo"
 func (basket *Basket) Put(stone Stone) {
-	basket.PutWithValue(stone, nil)
+	basket.PutWithValue(stone, nil, false)
 }
 
 // register a plugin to basket

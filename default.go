@@ -4,12 +4,27 @@ import "reflect"
 
 var defaultBasket = NewBasket()
 
+func AddNotStrict(name string, stone Stone, value ...interface{}) {
+	if len(value) == 0 {
+		defaultBasket.AddNotStrict(name, stone, nil)
+	} else {
+		defaultBasket.AddNotStrict(name, stone, value[0])
+	}
+}
+func PutNotStrict(name string, stone Stone, value ...interface{}) {
+	if len(value) == 0 {
+		defaultBasket.PutNotStrict(stone, nil)
+	} else {
+		defaultBasket.PutNotStrict(stone, value[0])
+	}
+}
+
 // add a stone to the default basket with a name
 func Add(name string, stone Stone, value ...interface{}) {
 	if len(value) == 0 {
 		defaultBasket.Add(name, stone)
 	} else {
-		defaultBasket.AddWithValue(name, stone, value[0])
+		defaultBasket.AddWithValue(name, stone, value[0], false)
 	}
 }
 
@@ -18,7 +33,7 @@ func Put(stone Stone, value ...interface{}) {
 	if len(value) == 0 {
 		defaultBasket.Put(stone)
 	} else {
-		defaultBasket.PutWithValue(stone, value[0])
+		defaultBasket.PutWithValue(stone, value[0], false)
 	}
 }
 

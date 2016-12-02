@@ -26,7 +26,7 @@ func buildTagOptions(tag string) *tagOption {
 	if strings.Contains(tag, ".") {
 		to.depend = false
 		to.prefix = tag[:strings.Index(tag, ".")]
-		to.path = tag[strings.Index(tag, ".") + 1:]
+		to.path = tag[strings.Index(tag, ".")+1:]
 		return to
 	}
 	to.depend = true

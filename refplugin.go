@@ -14,12 +14,12 @@ type RefPlugin struct {
 	basket *Basket
 }
 
-func (this *RefPlugin) Look(Holder *Holder, path string,sf *reflect.StructField) reflect.Value {
+func (this *RefPlugin) Look(Holder *Holder, path string, sf *reflect.StructField) reflect.Value {
 	stack := strings.Split(path, ".")
-	logger.Debug("[ref]", path,Holder.Class)
+	logger.Debug("[ref]", path, Holder.Class)
 	foundHolder := this.basket.GetStoneHolderWithName(stack[0])
-	if foundHolder==nil{
-		panic("the "+stack[0]+" not found")
+	if foundHolder == nil {
+		panic("the " + stack[0] + " not found")
 	}
 	Holder.Dependents = append(Holder.Dependents, foundHolder)
 	root := foundHolder.Stone

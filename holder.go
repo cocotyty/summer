@@ -8,6 +8,7 @@ import (
 
 // a holder that can hold stone
 type Holder struct {
+	ignoreStrict    bool
 	Stone           Stone
 	Class           reflect.Type
 	PointerClass    reflect.Type
@@ -54,7 +55,7 @@ func (holder *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo r
 	tag := fieldInfo.Tag.Get("sm")
 	if tag == "" {
 		if holder.Basket.strict && fieldValue.CanSet() {
-			panic(" strict mode not support exported field not use summer tag ")
+			panic(" strict mode not support exported field not use summer tag \n" + holder.Class.PkgPath() + " " + holder.Class.String() + " " + fieldInfo.Name)
 		}
 		return
 	}
