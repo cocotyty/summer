@@ -11,11 +11,16 @@ var NotSupportStructErr = errors.New("sorry we not support struct now")
 var NotSupportContainsDot = errors.New("sorry we not support name contains a dot")
 
 type Basket struct {
+	// strict mode
+	strict      bool
 	kv          map[string][]*Holder
 	delayFields map[string][]*DelayField
 	plugins     map[PluginWorkTime]pluginList
 }
 
+func (basket *Basket) Strict() {
+	basket.strict = true
+}
 func (basket *Basket) PutDelayField(field *DelayField) {
 	list, has := basket.delayFields[field.tagOption.prefix]
 	if !has {
@@ -24,7 +29,11 @@ func (basket *Basket) PutDelayField(field *DelayField) {
 	basket.delayFields[field.tagOption.prefix] = append(list, field)
 }
 func NewBasket() *Basket {
-	return &Basket{make(map[string][]*Holder), make(map[string][]*DelayField), make(map[PluginWorkTime]pluginList)}
+	return &Basket{
+		strict:      false,
+		kv:          make(map[string][]*Holder),
+		delayFields: make(map[string][]*DelayField),
+		plugins:     make(map[PluginWorkTime]pluginList)}
 }
 
 // add a stone to basket,the stone must be struct's pointer
