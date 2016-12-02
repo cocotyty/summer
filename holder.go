@@ -54,7 +54,7 @@ func (holder *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo r
 	// get the field's tag which belongs to summer
 	tag := fieldInfo.Tag.Get("sm")
 	if tag == "" {
-		if holder.Basket.strict && fieldValue.CanSet() {
+		if (!holder.ignoreStrict) && holder.Basket.strict && fieldValue.CanSet() {
 			panic(" strict mode not support exported field not use summer tag \n" + holder.Class.PkgPath() + " " + holder.Class.String() + " " + fieldInfo.Name)
 		}
 		return
