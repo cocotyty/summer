@@ -53,10 +53,14 @@ func (holder *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo r
 	// get the field's tag which belongs to summer
 	tag := fieldInfo.Tag.Get("sm")
 	if tag == "" {
+		if holder.Basket.strict && fieldValue.CanSet() {
+			panic(" strict mode not support exported field not use summer tag ")
+		}
 		return
 	}
 	if holder.PreTagRootValue != nil {
 		tag = preTag(holder.PreTagRootValue, tag)
+		logger.Debug("[pretag Field]", tag)
 	}
 	logger.Debug("[build Field]", holder.Class.Name(), fieldInfo.Name, fieldInfo.Type.Name(), fieldInfo.Tag, tag)
 
@@ -94,12 +98,21 @@ func (holder *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo r
 		if hd == nil {
 			// we don't know what happened ,maybe you forget put the stone into the basket
 			// so just panic
-			panic(errors.New("sorry,stone's dependency missed: " + fieldInfo.Name + ",type " + fieldType.Name()))
+			if fieldType.Kind() == reflect.Ptr {
+				panic(errors.New("Sorry,stone's dependency missed: " + holder.PointerClass.String() + " [field] " + fieldInfo.Name + " [type] pointer of " + fieldType.Elem().PkgPath() + "/" + fieldType.Elem().Name()))
+			} else {
+				panic(errors.New("Sorry,stone's dependency missed: " + holder.PointerClass.String() + " [field] " + fieldInfo.Name + " [type] " + fieldType.PkgPath() + "/" + fieldType.Name()))
+			}
 		}
 	}
 	// don't forget to record the dependency of the stone we need
 	holder.Dependents = append(holder.Dependents, hd)
-	fieldValue.Set(reflect.ValueOf(hd.Stone))
+	if fieldValue.CanSet() {
+		fieldValue.Set(reflect.ValueOf(hd.Stone))
+	} else {
+		panic(holder.Class.Name() + " depend on " + hd.Class.Name() + ": but not exported value")
+	}
+
 	logger.Debug(holder.Class.Name(), " depend on ", hd.Class.Name())
 }
 func (holder *Holder) init(holders map[*Holder]bool) {

@@ -39,6 +39,9 @@ func PluginRegister(p Plugin, pt PluginWorkTime) {
 func Start() {
 	defaultBasket.Start()
 }
+func Strict() {
+	defaultBasket.Strict()
+}
 func ShutDown() {
 	defaultBasket.ShutDown()
 }
