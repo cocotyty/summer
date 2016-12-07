@@ -47,7 +47,21 @@ func (this *TomlPlugin) Look(h *Holder, path string, sf *reflect.StructField) re
 			ints := []int{}
 			if list, ok := v.([]interface{}); ok {
 				for _, elm := range list {
-					i, ok := elm.(int)
+					i, ok := elm.(int64)
+					if !ok {
+						panic("Toml is Wrong! @" + path)
+					}
+					ints = append(ints, int(i))
+				}
+			}
+			return reflect.ValueOf(ints)
+		}
+
+		if sf.Type.Elem().Kind() == reflect.Int64 {
+			ints := []int64{}
+			if list, ok := v.([]interface{}); ok {
+				for _, elm := range list {
+					i, ok := elm.(int64)
 					if !ok {
 						panic("Toml is Wrong! @" + path)
 					}
