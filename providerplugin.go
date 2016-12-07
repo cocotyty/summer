@@ -42,7 +42,7 @@ func (this *ProviderPlugin) Look(holder *Holder, path string, sf *reflect.Struct
 		})
 	}
 	if need == empty {
-		panic("provider not found:" + holder.Class.PkgPath()+"/"+holder.Class.Name() + "." + sf.Name + " @." + path)
+		panic("provider not found:" + holder.Class.PkgPath() + "/" + holder.Class.Name() + "." + sf.Name + " @." + path)
 	}
 	return need
 }

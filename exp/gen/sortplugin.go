@@ -1,10 +1,10 @@
 package gen
 
 import (
-	"go/ast"
 	"bytes"
-	"text/template"
+	"go/ast"
 	"strings"
+	"text/template"
 )
 
 type SortPlugin struct {
@@ -15,10 +15,10 @@ func NewSortPlugin() *SortPlugin {
 	return &SortPlugin{template.Must(template.New("name").Parse(sortTpl))}
 }
 
-func (SortPlugin *SortPlugin)Tag() string {
+func (SortPlugin *SortPlugin) Tag() string {
 	return "sort"
 }
-func (SortPlugin *SortPlugin)Handle(body *bytes.Buffer, imports *bytes.Buffer, spec *ast.TypeSpec, tag string, path string, pkg string) {
+func (SortPlugin *SortPlugin) Handle(body *bytes.Buffer, imports *bytes.Buffer, spec *ast.TypeSpec, tag string, path string, pkg string) {
 	if _, ok := spec.Type.(*ast.ArrayType); ok {
 		sorts := []string{}
 		if tag != "*" {
@@ -28,8 +28,8 @@ func (SortPlugin *SortPlugin)Handle(body *bytes.Buffer, imports *bytes.Buffer, s
 			}
 		}
 		SortPlugin.tpl.Execute(body, map[string]interface{}{
-			"name":spec.Name,
-			"sorts":sorts,
+			"name":  spec.Name,
+			"sorts": sorts,
 		})
 	}
 }

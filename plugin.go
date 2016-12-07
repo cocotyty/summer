@@ -4,7 +4,7 @@ import "reflect"
 
 type Plugin interface {
 	// look up the value which field wanted
-	Look(Holder *Holder, path string,sf *reflect.StructField) reflect.Value
+	Look(Holder *Holder, path string, sf *reflect.StructField) reflect.Value
 	// tell  summer the plugin prefix
 	Prefix() string
 	// zIndex represent the sequence of plugins

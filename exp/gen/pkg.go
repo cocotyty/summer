@@ -1,16 +1,17 @@
 package gen
 
 import (
+	"bytes"
+	"github.com/cocotyty/summer"
 	"go/ast"
 	"go/parser"
 	"go/token"
 	"os"
-	"strings"
 	"reflect"
-	"bytes"
-	"github.com/cocotyty/summer"
+	"strings"
 )
-var log = summer.NewSimpleLog("gen",summer.InfoLevel)
+
+var log = summer.NewSimpleLog("gen", summer.InfoLevel)
 var L = string(os.PathSeparator)
 
 type Plugin interface {
@@ -60,12 +61,12 @@ func (code *GenCode) Work(path string) {
 			log.Println("f:", f)
 			for _, d := range f.Decls {
 				log.Println("d:", d)
-				switch dd := d.(type){
+				switch dd := d.(type) {
 				case *ast.GenDecl:
 					log.Println("dd:", dd)
 					for _, spec := range dd.Specs {
 						switch sp := spec.(type) {
-						case *ast.TypeSpec :
+						case *ast.TypeSpec:
 							log.Println(sp.Doc, sp.Comment, sp.Type)
 							log.Println(sp.Name, dd.Doc)
 							if dd.Doc != nil {
@@ -100,7 +101,7 @@ func (code *GenCode) Watch() {
 
 }
 
-func (code *GenCode)PluginWork(body, header *bytes.Buffer, spec *ast.TypeSpec, smTag string, path string, pkg string) {
+func (code *GenCode) PluginWork(body, header *bytes.Buffer, spec *ast.TypeSpec, smTag string, path string, pkg string) {
 	tags := reflect.StructTag(smTag)
 
 	for _, v := range code.PluginList {
@@ -126,9 +127,10 @@ func (code *GenCode)PluginWork(body, header *bytes.Buffer, spec *ast.TypeSpec, s
 	//	log.Println("map")
 	//}
 }
-func (code *GenCode)Register(Plugin Plugin) {
+func (code *GenCode) Register(Plugin Plugin) {
 	code.PluginList = append(code.PluginList, Plugin)
 }
+
 // func Pkg(name string) PkgHandler {
 //
 // 	log.Println(gopaths)
