@@ -117,38 +117,38 @@ func (holder *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo r
 	logger.Debug(holder.Class.Name(), " depend on ", hd.Class.Name())
 }
 func (holder *Holder) init(holders map[*Holder]bool) {
+	if holders[holder] {
+		return
+	}
+	holders[holder] = true
+	for _, v := range holder.Dependents {
+		v.init(holders)
+	}
 	if stone, ok := holder.Stone.(Init); ok {
-		if holders[holder] {
-			return
-		}
-		holders[holder] = true
-		for _, v := range holder.Dependents {
-			v.init(holders)
-		}
 		stone.Init()
 	}
 }
 func (holder *Holder) ready(holders map[*Holder]bool) {
+	if holders[holder] {
+		return
+	}
+	holders[holder] = true
+	for _, v := range holder.Dependents {
+		v.ready(holders)
+	}
 	if stone, ok := holder.Stone.(Ready); ok {
-		if holders[holder] {
-			return
-		}
-		holders[holder] = true
-		for _, v := range holder.Dependents {
-			v.ready(holders)
-		}
 		stone.Ready()
 	}
 }
 func (this *Holder) destroy(holders map[*Holder]bool) {
+	if holders[this] {
+		return
+	}
+	holders[this] = true
+	for _, v := range this.Dependents {
+		v.destroy(holders)
+	}
 	if stone, ok := this.Stone.(Destroy); ok {
-		if holders[this] {
-			return
-		}
-		holders[this] = true
-		for _, v := range this.Dependents {
-			v.destroy(holders)
-		}
 		stone.Destroy()
 	}
 }
