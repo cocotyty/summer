@@ -48,41 +48,41 @@ func (log *SimpleLog) Debug(args ...interface{}) {
 	if DebugLevel < log.level {
 		return
 	}
-	log.log.Println(args)
+	log.log.Println(args...)
 }
 func (log *SimpleLog) Error(args ...interface{}) {
 	if ErrorLevel < log.level {
 		return
 	}
-	log.log.Println(args)
+	log.log.Println(args...)
 }
 func (log *SimpleLog) Println(args ...interface{}) {
-	log.log.Println(args)
+	log.log.Println(args...)
 }
 func (log *SimpleLog) Warn(args ...interface{}) {
 	if WarnLevel < log.level {
 		return
 	}
-	log.log.Println(args)
+	log.log.Println(args...)
 }
 
 func (log *SimpleLog) Panic(args ...interface{}) {
 	if PanicLevel < log.level {
 		return
 	}
-	log.log.Panicln(args)
+	log.log.Panicln(args...)
 }
 
 func (log *SimpleLog) Fatal(args ...interface{}) {
 	if FatalLevel < log.level {
 		return
 	}
-	log.log.Fatalln(args)
+	log.log.Fatalln(args...)
 }
 
 func (log *SimpleLog) Info(args ...interface{}) {
 	if InfoLevel < log.level {
 		return
 	}
-	log.log.Println(args)
+	log.log.Println(args...)
 }
