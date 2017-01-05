@@ -59,6 +59,9 @@ func (holder *Holder) SetDirectDependValue(fieldValue reflect.Value, fieldInfo r
 		}
 		return
 	}
+	if tag == "-" {
+		return
+	}
 	if holder.PreTagRootValue != nil {
 		tag = preTag(holder.PreTagRootValue, tag)
 		logger.Debug("[pretag Field]", tag)
