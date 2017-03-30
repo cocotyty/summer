@@ -1,62 +1,86 @@
 package summer
 
-import "reflect"
+import (
+	"reflect"
+)
 
-var defaultBasket = NewBasket()
+var DefaultBasket = NewBasket()
+
+func init() {
+	PluginRegister(&ProviderPlugin{}, AfterInit)
+	PluginRegister(&FieldReferencePlugin{}, AfterInit)
+}
+func TomlFile(path string) error {
+	plugin, err := NewTomlPluginByFilePath(path)
+	if err != nil {
+		return err
+	}
+	PluginRegister(plugin, BeforeInit)
+	return nil
+}
+
+func Toml(src string) error {
+	plugin, err := NewTomlPluginBySource(src)
+	if err != nil {
+		return err
+	}
+	PluginRegister(plugin, BeforeInit)
+	return nil
+}
 
 func AddNotStrict(name string, stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.AddNotStrict(name, stone, nil)
+		DefaultBasket.AddNotStrict(name, stone, nil)
 	} else {
-		defaultBasket.AddNotStrict(name, stone, value[0])
+		DefaultBasket.AddNotStrict(name, stone, value[0])
 	}
 }
 func PutNotStrict(stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.PutNotStrict(stone, nil)
+		DefaultBasket.PutNotStrict(stone, nil)
 	} else {
-		defaultBasket.PutNotStrict(stone, value[0])
+		DefaultBasket.PutNotStrict(stone, value[0])
 	}
 }
 
 // add a stone to the default basket with a name
 func Add(name string, stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.Add(name, stone)
+		DefaultBasket.Add(name, stone)
 	} else {
-		defaultBasket.AddWithValue(name, stone, value[0], false)
+		DefaultBasket.AddWithValue(name, stone, value[0], false)
 	}
 }
 
 // put a stone into the default basket
 func Put(stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.Put(stone)
+		DefaultBasket.Put(stone)
 	} else {
-		defaultBasket.PutWithValue(stone, value[0], false)
+		DefaultBasket.PutWithValue(stone, value[0], false)
 	}
 }
 
 // get a stone with the name and the type
 func GetStone(name string, t reflect.Type) (stone Stone) {
-	return defaultBasket.GetStone(name, t)
+	return DefaultBasket.GetStone(name, t)
 }
 
 // get a tone with the name
 func GetStoneWithName(name string) (stone Stone) {
-	return defaultBasket.GetStoneWithName(name)
+	return DefaultBasket.GetStoneWithName(name)
 }
 
 // register a plugin to basket
 func PluginRegister(p Plugin, pt PluginWorkTime) {
-	defaultBasket.PluginRegister(p, pt)
+	DefaultBasket.PluginRegister(p, pt)
 }
 func Start() {
-	defaultBasket.Start()
+	DefaultBasket.Start()
 }
 func Strict() {
-	defaultBasket.Strict()
+	DefaultBasket.Strict()
 }
 func ShutDown() {
-	defaultBasket.ShutDown()
+	DefaultBasket.ShutDown()
 }

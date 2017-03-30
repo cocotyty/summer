@@ -1,19 +1,13 @@
 package summer
 
-import "reflect"
-
-func init() {
-	PluginRegister(&ProviderPlugin{}, AfterInit)
-}
-
-type Provider interface {
-	Provide() interface{}
-}
+import (
+	"reflect"
+)
 
 type ProviderPlugin struct {
 }
 
-func (this *ProviderPlugin) Look(holder *Holder, path string, sf *reflect.StructField) (need reflect.Value) {
+func (plugin *ProviderPlugin) Look(holder *Holder, path string, sf *reflect.StructField) (need reflect.Value) {
 	if path == "*" {
 		path = sf.Name
 	}
@@ -42,15 +36,15 @@ func (this *ProviderPlugin) Look(holder *Holder, path string, sf *reflect.Struct
 		})
 	}
 	if need == empty {
-		panic("provider not found:" + holder.Class.PkgPath() + "/" + holder.Class.Name() + "." + sf.Name + " @." + path)
+		panic("provider not found:" + holder.Type.PkgPath() + "/" + holder.Type.Name() + "." + sf.Name + " @." + path)
 	}
 	return need
 }
-func (this *ProviderPlugin) Prefix() string {
+func (plugin *ProviderPlugin) Prefix() string {
 	return "@"
 }
 
 // zIndex represent the sequence of plugins
-func (this *ProviderPlugin) ZIndex() int {
+func (plugin *ProviderPlugin) ZIndex() int {
 	return 3
 }

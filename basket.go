@@ -12,28 +12,28 @@ var NotSupportContainsDot = errors.New("sorry we not support name contains a dot
 
 type Basket struct {
 	// strict mode
-	strict      bool
-	kv          map[string][]*Holder
-	delayFields map[string][]*DelayField
-	plugins     map[PluginWorkTime]pluginList
+	strict         bool
+	nameHoldersMap map[string][]*Holder
+	delayedFields  map[string][]*DelayedField
+	plugins        map[PluginWorkTime]pluginList
 }
 
 func (basket *Basket) Strict() {
 	basket.strict = true
 }
-func (basket *Basket) PutDelayField(field *DelayField) {
-	list, has := basket.delayFields[field.tagOption.prefix]
+func (basket *Basket) PutDelayField(field *DelayedField) {
+	list, has := basket.delayedFields[field.tagOption.prefix]
 	if !has {
-		list = []*DelayField{}
+		list = []*DelayedField{}
 	}
-	basket.delayFields[field.tagOption.prefix] = append(list, field)
+	basket.delayedFields[field.tagOption.prefix] = append(list, field)
 }
 func NewBasket() *Basket {
 	return &Basket{
-		strict:      false,
-		kv:          make(map[string][]*Holder),
-		delayFields: make(map[string][]*DelayField),
-		plugins:     make(map[PluginWorkTime]pluginList)}
+		strict:         false,
+		nameHoldersMap: make(map[string][]*Holder),
+		delayedFields:  make(map[string][]*DelayedField),
+		plugins:        make(map[PluginWorkTime]pluginList)}
 }
 func (basket *Basket) AddNotStrict(name string, stone Stone, value interface{}) {
 	basket.AddWithValue(name, stone, value, true)
@@ -56,13 +56,13 @@ func (basket *Basket) AddWithValue(name string, stone Stone, root interface{}, i
 		panic(NotSupportStructErr)
 	}
 	holder := newHolder(stone, basket)
-	holder.ignoreStrict = ignoreStrict
-	if holders, found := basket.kv[name]; found {
-		basket.kv[name] = append(holders, holder)
+	holder.IgnoreStrict = ignoreStrict
+	if holders, found := basket.nameHoldersMap[name]; found {
+		basket.nameHoldersMap[name] = append(holders, holder)
 	} else {
-		basket.kv[name] = []*Holder{holder}
+		basket.nameHoldersMap[name] = []*Holder{holder}
 	}
-	holder.PreTagRootValue = root
+	holder.TagTemplateRootValue = root
 }
 
 func (basket *Basket) PutWithValue(stone Stone, root interface{}, ignoreStrict bool) {
@@ -109,86 +109,86 @@ func (basket *Basket) pluginWorks(wt PluginWorkTime) {
 	list := basket.plugins[wt]
 	for _, plugin := range list {
 		logger.Debug("[plugin][load][", wt, "]:", plugin.Prefix())
-		delayList := basket.delayFields[plugin.Prefix()]
+		delayList := basket.delayedFields[plugin.Prefix()]
 		for _, field := range delayList {
 			basket.pluginWork(plugin, field)
 		}
 	}
 	logger.Debug("[plugin][finish]")
 }
-func (basket *Basket) pluginWork(plugin Plugin, field *DelayField) {
+func (basket *Basket) pluginWork(plugin Plugin, field *DelayedField) {
 	// find the value we need from plugin
-	foundValue := plugin.Look(field.Holder, field.tagOption.path, &field.filedInfo)
+	foundValue := plugin.Look(field.holder, field.tagOption.path, &field.field)
 	// verify value
 	if !foundValue.IsValid() {
 		logger.Error(plugin.Prefix(), ".", field.tagOption.path, " not found")
 		return
 	}
 	// verify if the field can set a value
-	if !field.filedValue.CanSet() {
-		logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, ",may be an unexported value ")
+	if !field.value.CanSet() {
+		logger.Error("can not set the value ", field.field.Name, " tag:", field.field.Tag, ",may be an unexported value ")
 		return
 	}
-	logger.Debug("[plugin][path]", field.Holder.Class, field.tagOption.path, foundValue.Interface())
-	if field.filedInfo.Type.Kind() == foundValue.Kind() {
-		field.filedValue.Set(foundValue)
+	logger.Debug("[plugin][path]", field.holder.Type, field.tagOption.path, foundValue.Interface())
+	if field.field.Type.Kind() == foundValue.Kind() {
+		field.value.Set(foundValue)
 		return
 	}
-	if field.filedInfo.Type.Kind() == reflect.Interface {
-		if foundValue.Type().AssignableTo(field.filedInfo.Type) && foundValue.Type().ConvertibleTo(field.filedInfo.Type) {
-			field.filedValue.Set(foundValue)
+	if field.field.Type.Kind() == reflect.Interface {
+		if foundValue.Type().AssignableTo(field.field.Type) && foundValue.Type().ConvertibleTo(field.field.Type) {
+			field.value.Set(foundValue)
 			return
 		}
 	}
-	if field.filedInfo.Type.Kind() == reflect.Ptr && foundValue.Kind() != reflect.Ptr {
-		field.filedValue.Set(foundValue.Addr())
+	if field.field.Type.Kind() == reflect.Ptr && foundValue.Kind() != reflect.Ptr {
+		field.value.Set(foundValue.Addr())
 		return
 	}
-	if field.filedInfo.Type.Kind() != reflect.Ptr && foundValue.Kind() == reflect.Ptr {
-		field.filedValue.Set(foundValue.Elem())
+	if field.field.Type.Kind() != reflect.Ptr && foundValue.Kind() == reflect.Ptr {
+		field.value.Set(foundValue.Elem())
 		return
 	}
-	if field.filedInfo.Type.Kind() == reflect.Int || field.filedInfo.Type.Kind() == reflect.Int8 || field.filedInfo.Type.Kind() == reflect.Int16 || field.filedInfo.Type.Kind() == reflect.Int32 || field.filedInfo.Type.Kind() == reflect.Int64 {
+	if field.field.Type.Kind() == reflect.Int || field.field.Type.Kind() == reflect.Int8 || field.field.Type.Kind() == reflect.Int16 || field.field.Type.Kind() == reflect.Int32 || field.field.Type.Kind() == reflect.Int64 {
 		switch value := foundValue.Interface().(type) {
 		case int:
-			field.filedValue.SetInt(int64(value))
+			field.value.SetInt(int64(value))
 		case int8:
-			field.filedValue.SetInt(int64(value))
+			field.value.SetInt(int64(value))
 		case int16:
-			field.filedValue.SetInt(int64(value))
+			field.value.SetInt(int64(value))
 		case int32:
-			field.filedValue.SetInt(int64(value))
+			field.value.SetInt(int64(value))
 		case int64:
-			field.filedValue.SetInt(int64(value))
+			field.value.SetInt(int64(value))
 		default:
-			logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+			logger.Error("can not set the value ", field.field.Name, " tag:", field.field.Tag, " because ", field.field.Type, "!=", foundValue.Kind())
 		}
 		return
 	}
 	if foundValue.Kind() == reflect.Float64 || foundValue.Kind() == reflect.Float32 {
 		switch value := foundValue.Interface().(type) {
 		case float32:
-			field.filedValue.SetFloat(float64(value))
+			field.value.SetFloat(float64(value))
 		case float64:
-			field.filedValue.SetFloat(float64(value))
+			field.value.SetFloat(float64(value))
 		default:
-			logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+			logger.Error("can not set the value ", field.field.Name, " tag:", field.field.Tag, " because ", field.field.Type, "!=", foundValue.Kind())
 		}
 		return
 	}
-	logger.Error("can not set the value ", field.filedInfo.Name, " tag:", field.filedInfo.Tag, " because ", field.filedInfo.Type, "!=", foundValue.Kind())
+	logger.Error("can not set the value ", field.field.Name, " tag:", field.field.Tag, " because ", field.field.Type, "!=", foundValue.Kind())
 }
 
 // get a stone from basket
 func (basket *Basket) GetStone(name string, t reflect.Type) (stone Stone) {
-	if holder, found := basket.kv[name]; found {
+	if holder, found := basket.nameHoldersMap[name]; found {
 		for _, h := range holder {
 			if stone, has := basket.findStone(t, h); has {
 				return stone
 			}
 		}
 	}
-	for _, holder := range basket.kv {
+	for _, holder := range basket.nameHoldersMap {
 		for _, h := range holder {
 			if stone, has := basket.findStone(t, h); has {
 				return stone
@@ -200,7 +200,7 @@ func (basket *Basket) GetStone(name string, t reflect.Type) (stone Stone) {
 
 // get a stone from basket
 func (basket *Basket) GetStoneWithName(name string) (stone Stone) {
-	if holders, found := basket.kv[name]; found {
+	if holders, found := basket.nameHoldersMap[name]; found {
 		return holders[0].Stone
 	}
 	return nil
@@ -208,14 +208,14 @@ func (basket *Basket) GetStoneWithName(name string) (stone Stone) {
 
 // get a stone holder from basket
 func (basket *Basket) GetStoneHolder(name string, t reflect.Type) (h *Holder) {
-	if holder, found := basket.kv[name]; found {
+	if holder, found := basket.nameHoldersMap[name]; found {
 		for _, h := range holder {
 			if _, has := basket.findStone(t, h); has {
 				return h
 			}
 		}
 	}
-	for _, holder := range basket.kv {
+	for _, holder := range basket.nameHoldersMap {
 		for _, h := range holder {
 			if _, has := basket.findStone(t, h); has {
 				return h
@@ -227,13 +227,13 @@ func (basket *Basket) GetStoneHolder(name string, t reflect.Type) (h *Holder) {
 
 // get a stone holder from basket
 func (basket *Basket) GetStoneHolderWithName(name string) *Holder {
-	if holders, found := basket.kv[name]; found {
+	if holders, found := basket.nameHoldersMap[name]; found {
 		return holders[0]
 	}
 	return nil
 }
 func (basket *Basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
-	logger.Debug(t.PkgPath(), t, h.Class)
+	logger.Debug(t.PkgPath(), t, h.Type)
 	if t.Kind() == reflect.Interface {
 		if reflect.TypeOf(h.Stone).Implements(t) {
 			return h.Stone, true
@@ -243,7 +243,7 @@ func (basket *Basket) findStone(t reflect.Type, h *Holder) (Stone, bool) {
 	if t.Kind() == reflect.Struct {
 		t = reflect.PtrTo(t)
 	}
-	if h.PointerClass.AssignableTo(t) && h.PointerClass.ConvertibleTo(t) {
+	if h.PointerType.AssignableTo(t) && h.PointerType.ConvertibleTo(t) {
 		return h.Stone, true
 	}
 	return nil, false
@@ -287,14 +287,14 @@ func (basket *Basket) ShutDown() {
 	})
 }
 func (basket *Basket) Each(fn func(holder *Holder)) {
-	for _, holders := range basket.kv {
+	for _, holders := range basket.nameHoldersMap {
 		for _, holder := range holders {
 			fn(holder)
 		}
 	}
 }
 func (basket *Basket) EachHolder(fn func(name string, holder *Holder) bool) {
-	for name, holders := range basket.kv {
+	for name, holders := range basket.nameHoldersMap {
 		for _, holder := range holders {
 			if fn(name, holder) {
 				return
