@@ -10,18 +10,18 @@ func NewTomlPluginByFilePath(path string) (*TomlPlugin, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &TomlPlugin{tree: tree},nil
+	return &TomlPlugin{tree: tree}, nil
 }
 func NewTomlPluginBySource(src string) (*TomlPlugin, error) {
 	tree, err := toml.Load(src)
 	if err != nil {
 		return nil, err
 	}
-	return &TomlPlugin{tree: tree},nil
+	return &TomlPlugin{tree: tree}, nil
 }
 
 type TomlPlugin struct {
-	tree *toml.TomlTree
+	tree *toml.Tree
 }
 
 func (plugin *TomlPlugin) Look(h *Holder, path string, sf *reflect.StructField) reflect.Value {
