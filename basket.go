@@ -205,6 +205,21 @@ func (basket *Basket) GetStoneWithName(name string) (stone Stone) {
 	}
 	return nil
 }
+func (basket *Basket) GetStoneByType(typ interface{}) (result Stone) {
+	t := reflect.TypeOf(typ)
+	if t.Kind() != reflect.Ptr && t.Kind() != reflect.Func {
+		t = reflect.New(t).Type()
+	}
+
+	basket.EachHolder(func(name string, holder *Holder) bool {
+		if holder.PointerType == t {
+			result = holder.Stone
+			return true
+		}
+		return false
+	})
+	return
+}
 
 // get a stone holder from basket
 func (basket *Basket) GetStoneHolder(name string, t reflect.Type) (h *Holder) {

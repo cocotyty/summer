@@ -71,6 +71,10 @@ func GetStoneWithName(name string) (stone Stone) {
 	return DefaultBasket.GetStoneWithName(name)
 }
 
+func GetStoneByType(typ interface{}) (stone Stone) {
+	return DefaultBasket.GetStoneByType(typ)
+}
+
 // register a plugin to basket
 func PluginRegister(p Plugin, pt PluginWorkTime) {
 	DefaultBasket.PluginRegister(p, pt)
