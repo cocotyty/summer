@@ -101,11 +101,19 @@ func (h *Holder) SetDirectDependValue(fieldValue reflect.Value, field reflect.St
 		hd = h.Basket.GetStoneHolder(name, fieldType)
 		if hd == nil {
 			// we don't know what happened ,maybe you forget put the stone into the basket
-			// so just panic
-			if fieldType.Kind() == reflect.Ptr {
-				panic(errors.New("Sorry,stone's dependency missed: " + h.PointerType.String() + " [field] " + field.Name + " [type] pointer of " + fieldType.Elem().PkgPath() + "/" + fieldType.Elem().Name()))
-			} else {
-				panic(errors.New("Sorry,stone's dependency missed: " + h.PointerType.String() + " [field] " + field.Name + " [type] " + fieldType.PkgPath() + "/" + fieldType.Name()))
+			// so if fieldType's kind  is pointer of struct ,  put a new zero value in basket
+			if fieldType.Kind() == reflect.Ptr && fieldType.Elem().Kind() == reflect.Struct {
+				h.Basket.Put(reflect.New(fieldType.Elem()).Interface())
+				hd = h.Basket.GetStoneHolder(name, fieldType)
+				hd.ResolveDirectlyDependents()
+			}
+			if hd == nil {
+				// just panic
+				if fieldType.Kind() == reflect.Ptr {
+					panic(errors.New("Sorry,stone's dependency missed: " + h.PointerType.String() + " [field] " + field.Name + " [type] pointer of " + fieldType.Elem().PkgPath() + "/" + fieldType.Elem().Name()))
+				} else {
+					panic(errors.New("Sorry,stone's dependency missed: " + h.PointerType.String() + " [field] " + field.Name + " [type] " + fieldType.PkgPath() + "/" + fieldType.Name()))
+				}
 			}
 		}
 	}
