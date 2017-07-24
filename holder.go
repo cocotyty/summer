@@ -14,7 +14,7 @@ type Holder struct {
 	PointerType          reflect.Type
 	Value                reflect.Value
 	Basket               *Basket
-	Dependencies         []*Holder
+	Dependencies         map[*Holder]bool
 	TagTemplateRootValue interface{}
 }
 
@@ -26,7 +26,7 @@ func newHolder(stone Stone, basket *Basket) *Holder {
 			PointerType:  reflect.TypeOf(stone),
 			Value:        reflect.ValueOf(stone),
 			Basket:       basket,
-			Dependencies: []*Holder{},
+			Dependencies: map[*Holder]bool{},
 		}
 	}
 	return &Holder{
@@ -35,7 +35,7 @@ func newHolder(stone Stone, basket *Basket) *Holder {
 		PointerType:  reflect.TypeOf(stone),
 		Value:        reflect.ValueOf(stone).Elem(),
 		Basket:       basket,
-		Dependencies: []*Holder{},
+		Dependencies: map[*Holder]bool{},
 	}
 }
 func (h *Holder) ResolveDirectlyDependents() {
@@ -118,7 +118,7 @@ func (h *Holder) SetDirectDependValue(fieldValue reflect.Value, field reflect.St
 		}
 	}
 	// don't forget to record the dependency of the stone we need
-	h.Dependencies = append(h.Dependencies, hd)
+	h.Dependencies[hd] = true
 	if fieldValue.CanSet() {
 		fieldValue.Set(reflect.ValueOf(hd.Stone))
 	} else {
@@ -132,7 +132,7 @@ func (h *Holder) init(holders map[*Holder]bool) {
 		return
 	}
 	holders[h] = true
-	for _, v := range h.Dependencies {
+	for v := range h.Dependencies {
 		v.init(holders)
 	}
 	if stone, ok := h.Stone.(Init); ok {
@@ -144,7 +144,7 @@ func (h *Holder) ready(holders map[*Holder]bool) {
 		return
 	}
 	holders[h] = true
-	for _, v := range h.Dependencies {
+	for v := range h.Dependencies {
 		v.ready(holders)
 	}
 	if stone, ok := h.Stone.(Ready); ok {
@@ -156,7 +156,7 @@ func (h *Holder) destroy(holders map[*Holder]bool) {
 		return
 	}
 	holders[h] = true
-	for _, v := range h.Dependencies {
+	for v := range h.Dependencies {
 		v.destroy(holders)
 	}
 	if stone, ok := h.Stone.(Destroy); ok {

@@ -16,7 +16,7 @@ func (plugin *FieldReferencePlugin) Look(holder *Holder, path string, sf *reflec
 	if foundHolder == nil {
 		panic("the " + stack[0] + " not found")
 	}
-	holder.Dependencies = append(holder.Dependencies, foundHolder)
+	holder.Dependencies[foundHolder] = true
 	root := foundHolder.Stone
 	value := reflect.ValueOf(root)
 	for index, name := range stack {

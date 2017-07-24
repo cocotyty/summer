@@ -1,6 +1,9 @@
 package summer
 
 import (
+	"log"
+	"os"
+	"os/signal"
 	"reflect"
 )
 
@@ -80,8 +83,24 @@ func GetStoneByType(typ interface{}) (stone Stone) {
 func PluginRegister(p Plugin, pt PluginWorkTime) {
 	DefaultBasket.PluginRegister(p, pt)
 }
+
+// just start
 func Start() {
 	DefaultBasket.Start()
+}
+
+// start and wait interrupt signal to shutdown
+func Work() {
+	DefaultBasket.Start()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			log.Println("SHUTDOWN:", sig)
+			DefaultBasket.ShutDown()
+			os.Exit(0)
+		}
+	}()
 }
 func Strict() {
 	DefaultBasket.Strict()
