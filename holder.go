@@ -124,7 +124,6 @@ func (h *Holder) SetDirectDependValue(fieldValue reflect.Value, field reflect.St
 	} else {
 		panic(h.Type.Name() + " depend on " + hd.Type.Name() + ": but not exported value")
 	}
-
 	logger.Debug(h.Type.Name(), " depend on ", hd.Type.Name())
 }
 func (h *Holder) init(holders map[*Holder]bool) {

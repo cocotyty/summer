@@ -1,6 +1,9 @@
 package summer
 
-import "testing"
+import (
+	"fmt"
+	"testing"
+)
 
 type CycleTypeA struct {
 	B *CycleTypeB `sm:"*"`
@@ -31,14 +34,36 @@ type CommonA struct {
 	B *CommonB `sm:"*"`
 	C *CommonC `sm:"*"`
 }
+
+func (c *CommonA) Init() {
+	fmt.Println("CommonA")
+}
+
 type CommonB struct {
 	Str string
 	C   *CommonC `sm:"*"`
-}
-type CommonC struct {
-	Str string `sm:"#.str"`
+	D   *CommonD `sm:"*"`
 }
 
+func (c *CommonB) Init() {
+	fmt.Println("CommonB")
+}
+
+type CommonC struct {
+	Str string   `sm:"#.str"`
+	D   *CommonD `sm:"*"`
+}
+
+func (c *CommonC) Init() {
+	fmt.Println("CommonC")
+}
+
+type CommonD struct {
+}
+
+func (c *CommonD) Init() {
+	fmt.Println("CommonD")
+}
 func TestStart_Common(t *testing.T) {
 	a := &CommonA{}
 	b := &CommonB{}
@@ -51,6 +76,9 @@ func TestStart_Common(t *testing.T) {
 	}
 	if a.C != b.C {
 		t.Fatal(`a.C!= b.C`)
+	}
+	if a.B.D != a.C.D {
+		t.Fatal(`a.B.D!= a.C.D`)
 	}
 	if a.C.Str != "string" {
 		t.Fatal(a.C.Str)

@@ -98,7 +98,7 @@ func (basket *Basket) PluginRegister(plugin Plugin, t PluginWorkTime) {
 }
 
 func (basket *Basket) resolveStonesDirectlyDependents() {
-	basket.Each(func(holder *Holder) {
+	basket.SafeEach(func(holder *Holder) {
 		holder.ResolveDirectlyDependents()
 	})
 }
@@ -300,6 +300,23 @@ func (basket *Basket) ShutDown() {
 	basket.Each(func(holder *Holder) {
 		holder.destroy(set)
 	})
+}
+func (basket *Basket) copiedNameHoldersMap() map[string][]*Holder {
+	m := map[string][]*Holder{}
+	for name, holders := range basket.nameHoldersMap {
+		copyHolders := make([]*Holder, len(holders))
+		copy(copyHolders, holders)
+		m[name] = copyHolders
+	}
+	return m
+}
+func (basket *Basket) SafeEach(fn func(holder *Holder)) {
+	m := basket.copiedNameHoldersMap()
+	for _, holders := range m {
+		for _, holder := range holders {
+			fn(holder)
+		}
+	}
 }
 func (basket *Basket) Each(fn func(holder *Holder)) {
 	for _, holders := range basket.nameHoldersMap {
