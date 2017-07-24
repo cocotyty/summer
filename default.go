@@ -1,6 +1,7 @@
 package summer
 
 import (
+	"github.com/cocotyty/tdc"
 	"log"
 	"os"
 	"os/signal"
@@ -22,7 +23,13 @@ func TomlFile(path string) error {
 	PluginRegister(plugin, BeforeInit)
 	return nil
 }
-
+func DynamicTomlFile(path string, solver tdc.ResourceSolver) error {
+	src, err := tdc.NewDynamicToml(solver).Load(path)
+	if err != nil {
+		return err
+	}
+	return Toml(string(src))
+}
 func Toml(src string) error {
 	plugin, err := NewTomlPluginBySource(src)
 	if err != nil {
