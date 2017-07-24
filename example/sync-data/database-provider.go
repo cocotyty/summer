@@ -8,6 +8,7 @@ import (
 func init() {
 	summer.Put(&DatabaseProvider{})
 }
+
 type DatabaseProvider struct {
 	DB *sql.DB
 }

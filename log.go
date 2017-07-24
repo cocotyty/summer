@@ -27,7 +27,7 @@ func NewSimpleLogger(logLevel LogLevel) *SimpleLogger {
 	return &SimpleLogger{logLevel}
 }
 func (logger *SimpleLogger) Module(module string) *SimpleLog {
-	return &SimpleLog{SimpleLogger: logger, log: log.New(os.Stderr, "["+module+"]", log.LstdFlags), }
+	return &SimpleLog{SimpleLogger: logger, log: log.New(os.Stderr, "["+module+"]", log.LstdFlags)}
 }
 
 type SimpleLog struct {

@@ -1,11 +1,11 @@
 package main
 
 import (
-	"gopkg.in/redis.v4"
 	"database/sql"
-	"time"
-	"log"
 	"github.com/cocotyty/summer"
+	"gopkg.in/redis.v4"
+	"log"
+	"time"
 )
 
 const key = "/key"
@@ -15,7 +15,7 @@ func init() {
 }
 
 type SyncDataWorker struct {
-	RedisProvider    *RedisProvider `sm:"*"`
+	RedisProvider    *RedisProvider    `sm:"*"`
 	DatabaseProvider *DatabaseProvider `sm:"*"`
 	redisClient      *redis.Client
 	db               *sql.DB

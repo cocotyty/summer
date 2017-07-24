@@ -10,6 +10,7 @@ func init() {
 	PluginRegister(&ProviderPlugin{}, AfterInit)
 	PluginRegister(&FieldReferencePlugin{}, AfterInit)
 }
+
 func TomlFile(path string) error {
 	plugin, err := NewTomlPluginByFilePath(path)
 	if err != nil {

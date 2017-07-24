@@ -1,13 +1,14 @@
 package main
 
 import (
-	"gopkg.in/redis.v4"
 	"github.com/cocotyty/summer"
+	"gopkg.in/redis.v4"
 )
 
 func init() {
 	summer.Put(&RedisProvider{})
 }
+
 type RedisProvider struct {
 	Client *redis.Client
 }
