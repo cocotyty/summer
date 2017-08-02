@@ -6,6 +6,7 @@ import (
 	"os"
 	"os/signal"
 	"reflect"
+	"time"
 )
 
 var DefaultBasket = NewBasket()
@@ -29,6 +30,17 @@ func DynamicTomlFile(path string, solver tdc.ResourceSolver, listener tdc.Listen
 		return err
 	}
 	return Toml(string(src))
+}
+
+var FailFastConfigEnvMode = "mode"
+
+func FailFastConfig(path string, resolverAddr string) {
+	err := DynamicTomlFile(path, tdc.NewHTTPResourceSolver(resolverAddr, os.Getenv(FailFastConfigEnvMode), time.Second), func(name string, data []byte, version uint64, exist bool) {
+		ShutDown()
+	})
+	if err != nil {
+		panic(err)
+	}
 }
 func Toml(src string) error {
 	plugin, err := NewTomlPluginBySource(src)
