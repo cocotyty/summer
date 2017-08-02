@@ -23,8 +23,8 @@ func TomlFile(path string) error {
 	PluginRegister(plugin, BeforeInit)
 	return nil
 }
-func DynamicTomlFile(path string, solver tdc.ResourceSolver) error {
-	src, err := tdc.NewDynamicToml(solver).Load(path)
+func DynamicTomlFile(path string, solver tdc.ResourceSolver, listener tdc.Listener) error {
+	src, err := tdc.NewDynamicToml(solver, listener).Load(path)
 	if err != nil {
 		return err
 	}
