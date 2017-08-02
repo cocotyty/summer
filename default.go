@@ -3,6 +3,7 @@ package summer
 import (
 	"github.com/cocotyty/tdc"
 	"log"
+	"math/rand"
 	"os"
 	"os/signal"
 	"reflect"
@@ -33,11 +34,17 @@ func DynamicTomlFile(path string, solver tdc.ResourceSolver, listener tdc.Listen
 }
 
 var FailFastConfigEnvMode = "mode"
+var rd = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 func FailFastConfig(path string, resolverAddr string) {
-	err := DynamicTomlFile(path, tdc.NewHTTPResourceSolver(resolverAddr, os.Getenv(FailFastConfigEnvMode), time.Second), func(name string, data []byte, version uint64, exist bool) {
-		ShutDown()
-	})
+	err := DynamicTomlFile(
+		path,
+		tdc.NewHTTPResourceSolver(resolverAddr, os.Getenv(FailFastConfigEnvMode), time.Second),
+		func(name string, data []byte, version uint64, exist bool) {
+			time.Sleep(time.Millisecond * time.Duration(rd.Int63n(30*1000)))
+			ShutDown()
+			os.Exit(0)
+		})
 	if err != nil {
 		panic(err)
 	}
