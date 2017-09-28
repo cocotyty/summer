@@ -6,37 +6,32 @@ import (
 	"strings"
 )
 
-func init() {
-	defaultBasket.PluginRegister(&RefPlugin{defaultBasket}, AfterInit)
+type FieldReferencePlugin struct {
 }
 
-type RefPlugin struct {
-	basket *Basket
-}
-
-func (this *RefPlugin) Look(Holder *Holder, path string, sf *reflect.StructField) reflect.Value {
+func (plugin *FieldReferencePlugin) Look(holder *Holder, path string, sf *reflect.StructField) reflect.Value {
 	stack := strings.Split(path, ".")
-	logger.Debug("[ref]", path, Holder.Class)
-	foundHolder := this.basket.GetStoneHolderWithName(stack[0])
+	logger.Debug("[ref]", path, holder.Type)
+	foundHolder := holder.Basket.GetStoneHolderWithName(stack[0])
 	if foundHolder == nil {
 		panic("the " + stack[0] + " not found")
 	}
-	Holder.Dependents = append(Holder.Dependents, foundHolder)
+	holder.Dependencies[foundHolder] = true
 	root := foundHolder.Stone
 	value := reflect.ValueOf(root)
 	for index, name := range stack {
 		if index == 0 {
 			continue
 		}
-		value = this.lookChildren(value, name)
+		value = plugin.lookChildren(value, name)
 	}
 	return value
 }
 
-func (this *RefPlugin) lookChildren(parent reflect.Value, childrenName string) reflect.Value {
+func (plugin *FieldReferencePlugin) lookChildren(parent reflect.Value, childrenName string) reflect.Value {
 	pKind := parent.Kind()
 	if pKind == reflect.Ptr {
-		return this.lookChildren(parent.Elem(), childrenName)
+		return plugin.lookChildren(parent.Elem(), childrenName)
 	}
 	if pKind == reflect.Struct {
 		return parent.FieldByName(childrenName)
@@ -54,9 +49,9 @@ func (this *RefPlugin) lookChildren(parent reflect.Value, childrenName string) r
 	panic("sorry i dont know what happended")
 }
 
-func (this *RefPlugin) Prefix() string {
+func (plugin *FieldReferencePlugin) Prefix() string {
 	return "$"
 }
-func (this *RefPlugin) ZIndex() int {
+func (plugin *FieldReferencePlugin) ZIndex() int {
 	return 1
 }

@@ -5,7 +5,7 @@ import (
 	"text/template"
 )
 
-func preTag(obj interface{}, tag string) string {
+func tagTemplateExecute(obj interface{}, tag string) string {
 	t := template.Must(template.New("").Delims("(", ")").Parse(tag))
 	buf := bytes.NewBuffer(nil)
 	t.Execute(buf, obj)

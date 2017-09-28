@@ -1,112 +1,97 @@
-# summer
-summer like spring ^_&amp;
+# Summer IOC Framework
 
-## What is summer ?
+summer是一个开箱即用的ioc框架。
 
-![image](https://github.com/cocotyty/summer/raw/master/logo.png)
+功能：
+1. 根据类型或者tag解决组件之间的依赖
+2. 提供toml插件，根据tag直接写入组件的属性，不需要设计config的struct。
+3. 提供生命周期的管理，生命周期分为 
+    1. init 执行一些不需要依赖其他组件的初始化动作,一般是初始化组件基本信息，如链接数据库，链接zookeeper 
+    2. ready 组件执行ready表示本身组件已经可被调用,所有依赖组件的功能也可被调用。
+    此时可以执行一些需要依赖组件的初始化动作 
+    3. destroy 此时将会销毁或者卸载组件
+4. 定义了插件调用的时间锚点，可以自定义插件.
 
-Summer is a easy tool if you just want a simple IOC/DI framework. Summer work based on tag "sm".
+具体使用示例：
+1. 基本依赖与生命周期
+   - 场景:每隔一段时间从redis同步数据到mysql的小程序
+   - 代码 (具体见 *example/sync-data* 目录): 
+      
+       1. RedisProvider 负责提供redis链接
+        ```go
+           func init() {
+               summer.Put(&RedisProvider{})
+           }
+           type RedisProvider struct {
+               Client *redis.Client
+           }
+           
+           func (provider *RedisProvider) Init() {
+               provider.Client = redis.NewClient(&redis.Options{
+                   Addr: Conf.RedisAddr,
+               })
+               err := provider.Client.Ping().Err()
+               if err != nil {
+                   panic(err)
+               }
+           }
+           
+           func (provider *RedisProvider) Provide() (client *redis.Client) {
+               return provider.Client
+           }
+        ```
+       2. DatabaseProvider 负责提供数据库链接
+        ```go
+        func init() {
+            summer.Put(&DatabaseProvider{})
+        }
+        type DatabaseProvider struct {
+            DB *sql.DB
+        }
+        
+        func (provider *DatabaseProvider) Init() {
+            conn, err := sql.Open("mysql", Conf.MysqlDSN)
+            if err != nil {
+                panic(err)
+            }
+            provider.DB = conn
+        }
+        
+        func (provider *DatabaseProvider) Provide() (db *sql.DB) {
+            return provider.DB
+        }
+        ```
+       3. SyncDataWorker 定时执行同步数据操作
+       ```go
+        const key = "/key"
+        
+        func init() {
+            summer.Put(&SyncDataWorker{})
+        }
+        
+        type SyncDataWorker struct {
+            RedisProvider    *RedisProvider `sm:"*"`
+            DatabaseProvider *DatabaseProvider `sm:"*"`
+            redisClient      *redis.Client
+            db               *sql.DB
+        }
+        
+        func (worker *SyncDataWorker) Run() {
+            for {
+                if result := worker.redisClient.Get(key); result.Err() == nil {
+                    worker.db.Exec("update `test_table` set `text` = ? where `key` = ? ", result.String(), key)
+                } else {
+                    log.Println(result.Err())
+                }
+                time.Sleep(time.Minute)
+            }
+        }
+        func (worker *SyncDataWorker) Ready() {
+            worker.redisClient = worker.RedisProvider.Provide()
+            worker.db = worker.DatabaseProvider.Provide()
+            go worker.Run()
+        }
 
-If you want to use summer,you must put stone to the summer basket first,
-
-and you must call "Start",then summer can work for you.
-
-## What is Stone ?
-
-Stone is go stone,like bean is javabean.
-
-## What is basket ?
-
-A container to store stone,and resolve stones dependents.
-
-
-## simple use:
-
-```go
-package main
-
-import (
-	"github.com/cocotyty/summer"
-	"fmt"
-)
-
-func init() {
-	summer.Toml(`
-	[printer]
-	prefix="[PRINT]"`)
-	summer.Put(&A{})
-	summer.Add("lay", &B{})
-	summer.Put(&Cat{})
-	summer.Put(&Printer{})
-	summer.Start()
-}
-
-func main() {
-	a := summer.GetStoneWithName("a").(*A)
-	a.Call()
-}
-
-type A struct {
-	// $ means you want to get a stone's field , it happened usually after stones inited
-	BoyName string `sm:"$.lay.Name"`
-	B       *B `sm:"lay"`
-	// yes,we support interface ,tag is stone's name
-	C       C `sm:"cat"`
-}
-
-func (a *A)Call() {
-	a.C.Print()
-	fmt.Println("hi ,I am A", "bodys name:", a.BoyName)
-	fmt.Println(a.B)
-}
-
-type B struct {
-	Name string
-}
-
-func (this *B)Init() {
-	this.Name = "Boy!"
-}
-
-type C interface {
-	Print()
-}
-type Printer struct {
-	// if you already set the toml plugin config, you can use the #  ,to get value from toml,
-	// # is toml plugin's name
-	// toml plugin will work after directly dependency resolved,before init
-	Prefix string `sm:"#.printer.prefix"`
-}
-
-func (printer *Printer)Print(str string) {
-	fmt.Println(printer.Prefix + str)
-}
-
-type Cat struct {
-	// * is mostly used tag,summer will find by the field's name  or the field's type or both
-	Printer *Printer `sm:"*"`
-}
-
-func (c *Cat)Ready() {
-	fmt.Println("my name is cat,i am ready.")
-}
-func (c *Cat)Print() {
-	c.Printer.Print("Little Cat")
-}
-```
-
-output:
-```text
-my name is cat,i am ready.
-[PRINT]Little Cat
-hi ,I am A bodys name: Boy!
-&{Boy!}
-```
-
-really * easy *  as you see.
-
-[doc](http://godoc.org/github.com/cocotyty/summer)
-
-if you have questions ,you can send me a email  , my email address  is cocotyty@sina.com 
-
-
+        ```
+  
+   

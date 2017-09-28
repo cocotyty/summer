@@ -1,62 +1,136 @@
 package summer
 
-import "reflect"
+import (
+	"github.com/cocotyty/tdc"
+	"log"
+	"math/rand"
+	"os"
+	"os/signal"
+	"reflect"
+	"time"
+)
 
-var defaultBasket = NewBasket()
+var DefaultBasket = NewBasket()
+
+func init() {
+	PluginRegister(&ProviderPlugin{}, AfterInit)
+	PluginRegister(&FieldReferencePlugin{}, AfterInit)
+}
+
+func TomlFile(path string) error {
+	plugin, err := NewTomlPluginByFilePath(path)
+	if err != nil {
+		return err
+	}
+	PluginRegister(plugin, BeforeInit)
+	return nil
+}
+func DynamicTomlFile(path string, solver tdc.ResourceSolver, listener tdc.Listener) error {
+	src, err := tdc.NewDynamicToml(solver, listener).Load(path)
+	if err != nil {
+		return err
+	}
+	return Toml(string(src))
+}
+
+var FailFastConfigEnvMode = "mode"
+var rd = rand.New(rand.NewSource(time.Now().UnixNano()))
+
+func FailFastConfig(path string, resolverAddr string) {
+	err := DynamicTomlFile(
+		path,
+		tdc.NewHTTPResourceSolver(resolverAddr, os.Getenv(FailFastConfigEnvMode), time.Second),
+		func(name string, data []byte, version uint64, exist bool) {
+			time.Sleep(time.Millisecond * time.Duration(rd.Int63n(30*1000)))
+			ShutDown()
+			os.Exit(0)
+		})
+	if err != nil {
+		panic(err)
+	}
+}
+func Toml(src string) error {
+	plugin, err := NewTomlPluginBySource(src)
+	if err != nil {
+		return err
+	}
+	PluginRegister(plugin, BeforeInit)
+	return nil
+}
 
 func AddNotStrict(name string, stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.AddNotStrict(name, stone, nil)
+		DefaultBasket.AddNotStrict(name, stone, nil)
 	} else {
-		defaultBasket.AddNotStrict(name, stone, value[0])
+		DefaultBasket.AddNotStrict(name, stone, value[0])
 	}
 }
 func PutNotStrict(stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.PutNotStrict(stone, nil)
+		DefaultBasket.PutNotStrict(stone, nil)
 	} else {
-		defaultBasket.PutNotStrict(stone, value[0])
+		DefaultBasket.PutNotStrict(stone, value[0])
 	}
 }
 
 // add a stone to the default basket with a name
 func Add(name string, stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.Add(name, stone)
+		DefaultBasket.Add(name, stone)
 	} else {
-		defaultBasket.AddWithValue(name, stone, value[0], false)
+		DefaultBasket.AddWithValue(name, stone, value[0], false)
 	}
 }
 
 // put a stone into the default basket
 func Put(stone Stone, value ...interface{}) {
 	if len(value) == 0 {
-		defaultBasket.Put(stone)
+		DefaultBasket.Put(stone)
 	} else {
-		defaultBasket.PutWithValue(stone, value[0], false)
+		DefaultBasket.PutWithValue(stone, value[0], false)
 	}
 }
 
 // get a stone with the name and the type
 func GetStone(name string, t reflect.Type) (stone Stone) {
-	return defaultBasket.GetStone(name, t)
+	return DefaultBasket.GetStone(name, t)
 }
 
 // get a tone with the name
 func GetStoneWithName(name string) (stone Stone) {
-	return defaultBasket.GetStoneWithName(name)
+	return DefaultBasket.GetStoneWithName(name)
+}
+
+func GetStoneByType(typ interface{}) (stone Stone) {
+	return DefaultBasket.GetStoneByType(typ)
 }
 
 // register a plugin to basket
 func PluginRegister(p Plugin, pt PluginWorkTime) {
-	defaultBasket.PluginRegister(p, pt)
+	DefaultBasket.PluginRegister(p, pt)
 }
+
+// just start
 func Start() {
-	defaultBasket.Start()
+	DefaultBasket.Start()
+}
+
+// start and wait interrupt signal to shutdown
+func Work() {
+	DefaultBasket.Start()
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		for sig := range c {
+			log.Println("SHUTDOWN:", sig)
+			DefaultBasket.ShutDown()
+			os.Exit(0)
+		}
+	}()
 }
 func Strict() {
-	defaultBasket.Strict()
+	DefaultBasket.Strict()
 }
 func ShutDown() {
-	defaultBasket.ShutDown()
+	DefaultBasket.ShutDown()
 }

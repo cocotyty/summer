@@ -12,24 +12,24 @@ type tagOption struct {
 	prefix string
 }
 
-func buildTagOptions(tag string) *tagOption {
-	to := &tagOption{}
+func parseTagOption(tag string) *tagOption {
+	option := &tagOption{}
 	if tag == "*" {
-		to.depend = true
-		to.auto = true
-		return to
+		option.depend = true
+		option.auto = true
+		return option
 	}
 	if len(tag) <= 1 {
 		logger.Error("bad tag :", tag)
-		return to
+		return option
 	}
 	if strings.Contains(tag, ".") {
-		to.depend = false
-		to.prefix = tag[:strings.Index(tag, ".")]
-		to.path = tag[strings.Index(tag, ".")+1:]
-		return to
+		option.depend = false
+		option.prefix = tag[:strings.Index(tag, ".")]
+		option.path = tag[strings.Index(tag, ".")+1:]
+		return option
 	}
-	to.depend = true
-	to.name = tag
-	return to
+	option.depend = true
+	option.name = tag
+	return option
 }

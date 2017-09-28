@@ -17,3 +17,6 @@ type Ready interface {
 type Destroy interface {
 	Destroy()
 }
+type Provider interface {
+	Provide() interface{}
+}
